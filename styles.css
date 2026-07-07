@@ -255,27 +255,27 @@ body {
 .form__field textarea { resize: vertical; }
 .form__field--check {
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.7rem;
   cursor: pointer;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.85rem 0.9rem;
 }
 .form__field--check input {
   width: 1.15rem;
   height: 1.15rem;
-  margin-top: 0.15rem;
   accent-color: var(--accent);
   flex-shrink: 0;
+  cursor: pointer;
 }
 .form__field--check span {
   text-transform: none;
   letter-spacing: normal;
   font-size: 0.95rem;
   color: var(--ink);
-  line-height: 1.5;
-}
-.form__field--check em {
-  color: var(--muted);
-  font-style: italic;
+  line-height: 1.4;
 }
 .form__submit { align-self: center; margin-top: 0.6rem; }
 .form__status {
@@ -285,13 +285,6 @@ body {
   color: var(--accent-deep);
 }
 .form__status.error { color: #b3453a; }
-.form__note {
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--muted);
-  font-style: italic;
-  margin-top: 0.4rem;
-}
 .hero__cta { margin-top: 2rem; }
 
 /* ===== FOOTER ===== */
