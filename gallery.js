@@ -13,7 +13,7 @@ const PHOTOS = [
 ];
 
 // How long each photo stays before advancing (milliseconds).
-const INTERVAL_MS = 4500;
+const INTERVAL_MS = 3000;
 
 const slidesEl = document.getElementById("slides");
 const dotsEl = document.getElementById("dots");
