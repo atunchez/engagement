@@ -8,16 +8,6 @@ const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwDLd3eaT5iMdo7cg
 const form = document.getElementById("rsvp-form");
 const status = document.getElementById("form-status");
 
-// Read an uploaded file as a base64 string so it can be sent as text.
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(",")[1]); // strip data: prefix
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   status.classList.remove("error");
@@ -40,13 +30,6 @@ form.addEventListener("submit", async (e) => {
       guests: form.guests.value.trim(),
       wishes: form.wishes.value.trim(),
     };
-
-    const photoFile = form.photo.files[0];
-    if (photoFile) {
-      data.photoName = photoFile.name;
-      data.photoType = photoFile.type;
-      data.photoData = await fileToBase64(photoFile);
-    }
 
     // text/plain avoids a CORS preflight, which Apps Script doesn't answer.
     await fetch(RSVP_ENDPOINT, {
