@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alex &amp; Amanda — We're Engaged!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <div class="hero__inner">
+      <p class="hero__eyebrow">Together with joy, we invite you to celebrate</p>
+      <h1 class="hero__names">Alex <span>&amp;</span> Amanda</h1>
+      <p class="hero__tagline">are engaged</p>
+      <p class="hero__details">Please join us for our engagement party</p>
+      <!-- TODO: replace with your real date, time and place -->
+      <p class="hero__meta">Saturday · Date TBD · Location TBD</p>
+      <a class="btn hero__cta" href="#rsvp">RSVP</a>
+    </div>
+  </header>
+
+  <!-- ===== PHOTO GALLERY ===== -->
+  <section class="gallery" id="gallery">
+    <h2 class="section-title">Us</h2>
+    <div class="gallery__grid">
+      <!-- Drop your photos in the /photos folder and update the filenames below -->
+      <figure class="gallery__item">
+        <img src="photos/photo-1.jpg" alt="Alex and Amanda" onerror="this.parentNode.classList.add('gallery__item--empty')" />
+      </figure>
+      <figure class="gallery__item">
+        <img src="photos/photo-2.jpg" alt="Alex and Amanda" onerror="this.parentNode.classList.add('gallery__item--empty')" />
+      </figure>
+      <figure class="gallery__item">
+        <img src="photos/photo-3.jpg" alt="Alex and Amanda" onerror="this.parentNode.classList.add('gallery__item--empty')" />
+      </figure>
+      <figure class="gallery__item">
+        <img src="photos/photo-4.jpg" alt="Alex and Amanda" onerror="this.parentNode.classList.add('gallery__item--empty')" />
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===== RSVP ===== -->
+  <section class="rsvp" id="rsvp">
+    <div class="rsvp__inner">
+      <h2 class="section-title">RSVP</h2>
+      <p class="rsvp__intro">Let us know you're coming, and leave us a note if you'd like. We'd love that.</p>
+
+      <form id="rsvp-form" class="form">
+        <div class="form__row">
+          <label class="form__field">
+            <span>First name *</span>
+            <input type="text" name="firstName" required />
+          </label>
+          <label class="form__field">
+            <span>Last name *</span>
+            <input type="text" name="lastName" required />
+          </label>
+        </div>
+
+        <label class="form__field">
+          <span>Will you be attending?</span>
+          <select name="attending">
+            <option value="Yes, joyfully!">Yes, joyfully!</option>
+            <option value="Sadly, cannot make it">Sadly, cannot make it</option>
+          </select>
+        </label>
+
+        <label class="form__field">
+          <span>Wishes for the happy couple</span>
+          <textarea name="wishes" rows="4" placeholder="Share a message, a memory, or a bit of advice…"></textarea>
+        </label>
+
+        <label class="form__field">
+          <span>Add a photo (optional)</span>
+          <input type="file" name="photo" accept="image/*" />
+        </label>
+
+        <button type="submit" class="btn form__submit">Send RSVP</button>
+
+        <p id="form-status" class="form__status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>With love, Alex &amp; Amanda</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

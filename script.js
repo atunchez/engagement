@@ -1,0 +1,67 @@
+// ===================================================================
+//  PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BETWEEN THE QUOTES BELOW
+//  (see SETUP.md, step 3). It looks like:
+//  https://script.google.com/macros/s/AKfy..../exec
+// ===================================================================
+const RSVP_ENDPOINT = "PASTE_YOUR_WEB_APP_URL_HERE";
+
+const form = document.getElementById("rsvp-form");
+const status = document.getElementById("form-status");
+
+// Read an uploaded file as a base64 string so it can be sent as text.
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]); // strip data: prefix
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  status.classList.remove("error");
+
+  if (RSVP_ENDPOINT.startsWith("PASTE")) {
+    status.textContent = "Setup not finished — add your Web App URL in script.js.";
+    status.classList.add("error");
+    return;
+  }
+
+  const submitBtn = form.querySelector(".form__submit");
+  submitBtn.disabled = true;
+  status.textContent = "Sending…";
+
+  try {
+    const data = {
+      firstName: form.firstName.value.trim(),
+      lastName: form.lastName.value.trim(),
+      attending: form.attending.value,
+      wishes: form.wishes.value.trim(),
+    };
+
+    const photoFile = form.photo.files[0];
+    if (photoFile) {
+      data.photoName = photoFile.name;
+      data.photoType = photoFile.type;
+      data.photoData = await fileToBase64(photoFile);
+    }
+
+    // text/plain avoids a CORS preflight, which Apps Script doesn't answer.
+    await fetch(RSVP_ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(data),
+    });
+
+    // With no-cors we can't read the response, so we assume success.
+    form.reset();
+    status.textContent = "Thank you! Your RSVP has been received 💛";
+  } catch (err) {
+    status.textContent = "Something went wrong — please try again.";
+    status.classList.add("error");
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
