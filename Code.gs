@@ -36,11 +36,11 @@ function doPost(e) {
 
     sheet.appendRow([
       new Date(),
-      data.firstName || "",
-      data.lastName || "",
-      data.attending || "",
-      data.guests || "",
-      data.wishes || "",
+      safeText_(data.firstName),
+      safeText_(data.lastName),
+      safeText_(data.attending),
+      safeText_(data.guests),
+      safeText_(data.wishes),
       photoLink,
     ]);
 
@@ -52,6 +52,12 @@ function doPost(e) {
       JSON.stringify({ result: "error", message: err.toString() })
     ).setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+// Prevent Sheets from treating entries like "+1 …" or "=hi" as formulas.
+function safeText_(value) {
+  const v = value || "";
+  return /^[=+\-@]/.test(v) ? "'" + v : v;
 }
 
 function getOrCreatePhotoFolder_() {
