@@ -16,7 +16,7 @@ function doPost(e) {
     // Add a header row the first time.
     if (sheet.getLastRow() === 0) {
       sheet.appendRow([
-        "Timestamp", "First Name", "Last Name", "Attending", "Additional Guests", "Food Allergies", "Wishes", "Photo",
+        "Timestamp", "First Name", "Last Name", "Attending", "Additional Guests", "Food Allergies", "Waymo Code", "Wishes", "Photo",
       ]);
     }
 
@@ -41,6 +41,7 @@ function doPost(e) {
       safeText_(data.attending),
       safeText_(data.guests),
       safeText_(data.allergies),
+      safeText_(data.waymo),
       safeText_(data.wishes),
       photoLink,
     ]);

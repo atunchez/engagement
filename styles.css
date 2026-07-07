@@ -253,6 +253,30 @@ body {
   border-color: var(--accent);
 }
 .form__field textarea { resize: vertical; }
+.form__field--check {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.7rem;
+  cursor: pointer;
+}
+.form__field--check input {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.15rem;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+.form__field--check span {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.95rem;
+  color: var(--ink);
+  line-height: 1.5;
+}
+.form__field--check em {
+  color: var(--muted);
+  font-style: italic;
+}
 .form__submit { align-self: center; margin-top: 0.6rem; }
 .form__status {
   text-align: center;

@@ -29,6 +29,7 @@ form.addEventListener("submit", async (e) => {
       attending: form.attending.value,
       guests: form.guests.value.trim(),
       allergies: form.allergies.value.trim(),
+      waymo: form.waymo.checked ? "Yes" : "",
       wishes: form.wishes.value.trim(),
     };
 
