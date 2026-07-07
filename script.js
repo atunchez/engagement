@@ -3,7 +3,7 @@
 //  (see SETUP.md, step 3). It looks like:
 //  https://script.google.com/macros/s/AKfy..../exec
 // ===================================================================
-const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbyRWPJI8ZQEIbGboZZxCOh6j50QFF0mPblR6RB3_t6EA6Hwziz9Z7OUKxNHHp5nB6zn/exec";
+const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwDLd3eaT5iMdo7cgOs1B8RPtrU7cSO2ktTY1G28qJkCToHwNX7aXH9-_WkfmH5ibyg/exec";
 
 const form = document.getElementById("rsvp-form");
 const status = document.getElementById("form-status");
