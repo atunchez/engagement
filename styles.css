@@ -177,6 +177,39 @@ body {
 }
 .slide-dot.is-active { background: #fff; transform: scale(1.25); }
 
+/* ===== DETAILS ===== */
+.details {
+  padding: 5rem 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.details__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+.details__card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1.8rem 1.6rem;
+  text-align: center;
+}
+.details__card h3 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--accent-deep);
+  margin-bottom: 0.6rem;
+}
+.details__card p { color: var(--ink); font-size: 0.98rem; }
+.details__card a {
+  color: var(--accent-deep);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+}
+.details__card a:hover { border-color: var(--accent-deep); }
+
 /* ===== RSVP ===== */
 .rsvp {
   padding: 5rem 1.5rem 6rem;
