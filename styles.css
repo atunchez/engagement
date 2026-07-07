@@ -285,6 +285,14 @@ body {
   color: var(--accent-deep);
 }
 .form__status.error { color: #b3453a; }
+.form__note {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 0.4rem;
+}
+.hero__cta { margin-top: 2rem; }
 
 /* ===== FOOTER ===== */
 .footer {
