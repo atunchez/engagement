@@ -16,7 +16,7 @@ function doPost(e) {
     // Add a header row the first time.
     if (sheet.getLastRow() === 0) {
       sheet.appendRow([
-        "Timestamp", "First Name", "Last Name", "Attending", "Wishes", "Photo",
+        "Timestamp", "First Name", "Last Name", "Attending", "Additional Guests", "Wishes", "Photo",
       ]);
     }
 
@@ -39,6 +39,7 @@ function doPost(e) {
       data.firstName || "",
       data.lastName || "",
       data.attending || "",
+      data.guests || "",
       data.wishes || "",
       photoLink,
     ]);

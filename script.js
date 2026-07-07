@@ -37,6 +37,7 @@ form.addEventListener("submit", async (e) => {
       firstName: form.firstName.value.trim(),
       lastName: form.lastName.value.trim(),
       attending: form.attending.value,
+      guests: form.guests.value.trim(),
       wishes: form.wishes.value.trim(),
     };
 
