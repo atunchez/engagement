@@ -85,11 +85,24 @@ body {
 }
 .hero__details { color: var(--ink); margin-bottom: 0.4rem; }
 .hero__meta {
-  color: var(--muted);
-  font-size: 0.9rem;
+  color: var(--ink);
+  font-size: 1rem;
   letter-spacing: 0.05em;
+  margin-bottom: 0.6rem;
+}
+.hero__venue {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.7;
   margin-bottom: 2.5rem;
 }
+.hero__venue a {
+  color: var(--accent-deep);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  transition: border-color 0.2s ease;
+}
+.hero__venue a:hover { border-color: var(--accent-deep); }
 
 /* ===== GALLERY ===== */
 .gallery { padding: 5rem 1.5rem; max-width: 1000px; margin: 0 auto; }
