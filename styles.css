@@ -52,10 +52,10 @@ body {
 .hero {
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   text-align: center;
-  padding: 4rem 1.5rem;
+  padding: 11vh 1.5rem 4rem;
   color: #fff;
   background:
     linear-gradient(rgba(38,28,22,0.45), rgba(38,28,22,0.6)),
