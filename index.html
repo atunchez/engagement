@@ -30,20 +30,11 @@
   <!-- ===== PHOTO GALLERY ===== -->
   <section class="gallery" id="gallery">
     <h2 class="section-title">Us</h2>
-    <div class="gallery__grid">
-      <!-- Drop your photos in the /photos folder and update the filenames below -->
-      <figure class="gallery__item">
-        <img src="photos/photo-1.jpg" alt="Alex and Amanda" onerror="this.parentNode.classList.add('gallery__item--empty')" />
-      </figure>
-      <figure class="gallery__item">
-        <img src="photos/photo-2.jpg" alt="Alex and Amanda" onerror="this.parentNode.classList.add('gallery__item--empty')" />
-      </figure>
-      <figure class="gallery__item">
-        <img src="photos/photo-3.jpg" alt="Alex and Amanda" onerror="this.parentNode.classList.add('gallery__item--empty')" />
-      </figure>
-      <figure class="gallery__item">
-        <img src="photos/photo-4.jpg" alt="Alex and Amanda" onerror="this.parentNode.classList.add('gallery__item--empty')" />
-      </figure>
+    <div class="slideshow" id="slideshow">
+      <div class="slides" id="slides"><!-- slides injected by gallery.js --></div>
+      <button class="slide-nav slide-nav--prev" id="prevBtn" aria-label="Previous photo">&#8249;</button>
+      <button class="slide-nav slide-nav--next" id="nextBtn" aria-label="Next photo">&#8250;</button>
+      <div class="slide-dots" id="dots"></div>
     </div>
   </section>
 
@@ -94,6 +85,7 @@
     <p>With love, Alex &amp; Amanda</p>
   </footer>
 
+  <script src="gallery.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
