@@ -72,7 +72,7 @@ body {
 }
 .hero__names {
   font-family: "Cormorant Garamond", serif;
-  font-size: clamp(3.2rem, 12vw, 7rem);
+  font-size: clamp(2rem, 11vw, 7rem);
   font-weight: 500;
   line-height: 1.05;
   color: #fff;
