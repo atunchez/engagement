@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disposable Camera — Alex &amp; Amanda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=2" />
+  <link rel="stylesheet" href="fun.css?v=1" />
+</head>
+<body class="page">
+
+  <nav class="tabs">
+    <a href="quiz.html">The Quiz</a>
+    <a href="camera.html" aria-current="page">Disposable Cam</a>
+    <a class="tabs__home" href="index.html">Home</a>
+  </nav>
+
+  <main class="cam">
+    <h1 class="section-title">Disposable Camera</h1>
+    <p class="cam__intro">
+      Take a photo — or pick one you already took — and we'll develop it like it
+      came off a drugstore point-and-shoot. Send it to us and it goes in the pile.
+    </p>
+
+    <!-- ===== PICK A PHOTO ===== -->
+    <div class="cam__drop" id="drop">
+      <div class="cam__drop-icon">&#128247;</div>
+      <p class="cam__drop-text">Tap to take a photo</p>
+      <p class="cam__drop-hint">or choose one from your camera roll</p>
+      <input type="file" id="fileInput" accept="image/*" capture="environment" />
+    </div>
+
+    <p class="cam__working" id="working" hidden>Developing…</p>
+
+    <!-- ===== DEVELOPED PHOTO ===== -->
+    <div class="cam__result" id="result" hidden>
+      <div class="cam__frame">
+        <canvas class="cam__canvas" id="canvas"></canvas>
+      </div>
+
+      <div class="cam__actions">
+        <button class="btn" id="sendBtn">Send it to us</button>
+        <a class="btn btn--ghost" id="downloadBtn" download="engagement-party.jpg">Save to my phone</a>
+        <button class="btn btn--ghost" id="againBtn">Another one</button>
+      </div>
+
+      <label class="form__field cam__field">
+        <span>Your name (optional)</span>
+        <input type="text" id="camName" maxlength="40" placeholder="so we know who took it" />
+      </label>
+
+      <p class="cam__status" id="camStatus" role="status" aria-live="polite"></p>
+    </div>
+
+    <p class="cam__note">
+      Photos go straight to our private Google Drive folder — nothing is posted
+      publicly. Your original stays untouched on your phone.
+    </p>
+  </main>
+
+  <footer class="footer">
+    <p>With love, Alex &amp; Amanda</p>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="camera.js"></script>
+</body>
+</html>

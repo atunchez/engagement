@@ -67,6 +67,76 @@ because browsers block the Google request from a local file.
 
 ---
 
+## The party pages (quiz + disposable camera)
+
+These live on the **`party-games`** branch and are **not** on `main` yet, so
+nobody can play early. Two pages:
+
+| Page | What it is |
+| --- | --- |
+| `quiz.html` | "How well do you know us?" — multiple choice plus drag-free timeline sorting, a score, and a leaderboard |
+| `camera.html` | Guests take a photo, it gets developed to look like a disposable camera print, and it's sent to a Drive folder |
+
+### Before the party — fill in the questions
+
+Open **`quiz-data.js`**. Every `TODO` is a placeholder. For each question:
+
+- `type: "choice"` → write the question and four options, and set `correct`
+  to the index of the right one (**0** is the first option, **1** the second…).
+- `type: "order"` → list `items` in the **correct** order, earliest first.
+  The quiz shuffles them for the guest and gives partial credit.
+- `note` is the line shown after they answer. That's where the story goes.
+  Delete the line if a question doesn't need one.
+
+Add or remove questions freely — the scoring adjusts to however many there are.
+
+### Re-deploy the Apps Script (required — do this once)
+
+`Code.gs` changed: it now also files quiz scores and party photos. Apps Script
+keeps running the old code until you publish a new version:
+
+**Extensions → Apps Script**, paste in the new `Code.gs`, Save, then
+**Deploy → Manage deployments → pencil ✏️ → Version: New version → Deploy.**
+
+You do *not* need a new URL — the existing one keeps working. Afterwards your
+Sheet grows two new tabs (`Quiz Scores`, `Party Photos`) the first time each
+one receives something.
+
+> The Web App URL lives in **two** files now: `script.js` (RSVP) and
+> `config.js` (quiz + camera). If you ever create a *new* deployment and the
+> URL changes, update both.
+
+### Previewing before it's live
+
+```bash
+cd engagement-site
+python3 -m http.server 8000
+```
+
+Then open <http://localhost:8000/quiz.html>. Everything works, including
+posting scores and photos (the RSVP/quiz/photo submits need `http://`, not a
+double-clicked file). Test the camera page on your phone too — that's where
+it'll actually be used.
+
+### Going live on the day
+
+```bash
+git checkout main
+git merge party-games
+git push
+```
+
+GitHub Pages picks it up in a minute or two. That publishes the two pages plus
+an **"At the Party"** section on the homepage that links to them.
+
+### QR code for the tables
+
+Point it at `https://atunchez.github.io/engagement/quiz.html` — the tab bar at
+the top of the quiz carries people over to the camera, so one code is enough.
+Any free QR generator works; print it big enough to scan from across a table.
+
+---
+
 ## Quick troubleshooting
 
 - **"Setup not finished" message** → you haven't pasted the Web App URL into `script.js`.
