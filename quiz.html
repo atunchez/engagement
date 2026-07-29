@@ -25,6 +25,7 @@
       <h1 class="section-title" id="quizTitle">How well do you know us?</h1>
       <p class="quiz__intro" id="quizIntro"></p>
       <button class="btn" id="startBtn">Start</button>
+      <button class="quiz__replay" id="resumeBtn" hidden>See how you did</button>
     </section>
 
     <!-- ===== PLAY ===== -->
@@ -66,10 +67,19 @@
         <p class="form__status" id="scoreStatus" role="status" aria-live="polite"></p>
       </form>
 
+      <p class="quiz__pending" id="pending" hidden>
+        The answers are still sealed — Alex and Amanda will drop them later
+        tonight. Leave this page open, or come back to it: this phone remembers
+        what you picked, so you'll see exactly what you got wrong.
+      </p>
+
       <div class="quiz__after">
+        <button class="btn" id="revealBtn" hidden>See the answers</button>
         <a class="btn btn--ghost" href="camera.html">Now take a photo &#8250;</a>
         <button class="quiz__replay" id="replayBtn">Play again</button>
       </div>
+
+      <div class="review" id="review" hidden></div>
 
       <div class="leaderboard" id="leaderboard" hidden>
         <h3>Leaderboard</h3>
@@ -84,6 +94,7 @@
   </footer>
 
   <script src="config.js"></script>
+  <script src="api.js"></script>
   <script src="quiz-data.js"></script>
   <script src="quiz.js"></script>
 </body>

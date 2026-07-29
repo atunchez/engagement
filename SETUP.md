@@ -75,7 +75,8 @@ nobody can play early. Two pages:
 | Page | What it is |
 | --- | --- |
 | `quiz.html` | "How well do you know us?" — multiple choice plus drag-free timeline sorting, a score, and a leaderboard |
-| `camera.html` | Guests take a photo, it gets developed to look like a disposable camera print, and it's sent to a Drive folder |
+| `camera.html` | Guests take a photo, it gets developed to look like a disposable camera print, and it's sent to your private album |
+| `board.html` | For the TV, not for guests. Live leaderboard plus which questions people are getting wrong. Open it on a laptop, cast it, press **F** for fullscreen, leave it running. |
 
 ### Before the party — fill in the questions
 
@@ -90,38 +91,77 @@ Open **`quiz-data.js`**. Every `TODO` is a placeholder. For each question:
 
 Add or remove questions freely — the scoring adjusts to however many there are.
 
-### Set up the party Sheet (required — about 10 minutes, once)
+### Set up Supabase (required — about 10 minutes, once)
 
-The party pages use a **separate spreadsheet and a separate script** from the
-RSVP form. Nothing here can write to your RSVP sheet, and your live RSVP form
-is never re-deployed or touched.
+The party pages use **Supabase**, not Google Sheets. It's a free hosted
+Postgres database with file storage and a real API — which is what a
+leaderboard guests keep refreshing actually needs. Your RSVP form is untouched
+and keeps using its own Sheet and Apps Script.
 
-1. Go to **[sheets.new](https://sheets.new)** for a brand-new, empty Sheet.
-   Name it something like "Engagement Party Games". **Do not use the RSVP
-   Sheet.**
-2. In that new Sheet: **Extensions → Apps Script**.
-3. Delete the placeholder code and **paste the entire contents of `Party.gs`**
-   (not `Code.gs` — that one belongs to the RSVP Sheet and stays where it is).
-   Save 💾.
-4. **Deploy → New deployment** → gear ⚙️ → **Web app**.
-   - **Execute as:** *Me*
-   - **Who has access:** **Anyone** ← required
-   - **Deploy**, then authorize when prompted (Advanced → Go to … → Allow).
-5. Copy the **Web app URL** (it ends in `/exec`).
-6. Open **`config.js`** and paste it over `PASTE_THE_PARTY_WEB_APP_URL_HERE`.
+1. Sign up at **[supabase.com](https://supabase.com)** and create a project.
+   Any region near you.
+2. In the project: **SQL Editor → New query**. Paste the entire contents of
+   **`schema.sql`** and click **Run**. That creates the `scores` table, the
+   answer-release switch, and a private photo bucket — with access rules that
+   let guests post a score and a photo and do nothing else.
+3. **Project Settings → API**, and copy two values:
+   - **Project URL** (`https://xxxx.supabase.co`)
+   - the **anon / public** key
+4. Open **`config.js`** and paste them over the two `PASTE_…` placeholders.
 
-That's it. Two tabs (`Quiz Scores`, `Photos`) appear in the new Sheet the first
-time each receives something, and guest photos land in a Drive folder called
-"Engagement Party Photos".
+That's it — no deployments, no re-deployments.
 
-> **The two URLs must be different.** `script.js` holds the RSVP URL;
-> `config.js` holds the party URL. If you paste the RSVP URL into `config.js`,
-> the quiz and camera detect it and refuse to send anything rather than
-> dropping junk rows in your RSVP sheet.
+> **The anon key is meant to be public.** It's safe in this repo and in the
+> browser. What it's allowed to do is fixed by the policies in `schema.sql`.
+> **Never** put the `service_role` key here — that one bypasses every policy.
 
-> **If you later edit `Party.gs`**, re-deploy it: **Deploy → Manage
-> deployments → pencil ✏️ → Version: New version → Deploy.** This is entirely
-> separate from the RSVP deployment.
+### Releasing the answers — your switch
+
+Until you flip it, guests answer, see "Locked in", and get their final score
+without learning *which* ones they missed. Their picks are saved in their own
+browser, so the moment you release, they can pull up exactly what they got
+wrong with your stories attached.
+
+**To release, from your phone:** Supabase dashboard → **Table Editor** →
+`settings` → the single row → set **`answers_released`** to **true** → save.
+
+Open quiz pages pick it up within about 20 seconds. Anyone who plays after that
+sees answers immediately, so it winds down gracefully.
+
+There's deliberately no admin page for this — flipping it from the website
+would mean putting a password in public JavaScript. The dashboard needs no
+secret at all.
+
+### Where the photos go
+
+Every photo is stored **twice**, so nothing is lost to the filter:
+
+| File | What it is |
+| --- | --- |
+| `<id>-film.jpg` | The developed version, ~400KB. Uploads first. |
+| `<id>-original.heic` (or `.jpg`) | Exactly what came off their phone, unmodified. Uploaded in the background afterwards, so nobody waits on a 10MB file over brewery wifi. |
+
+They share an `id`, so the pair always matches up.
+
+1. The guest picks or shoots a photo.
+2. `camera.js` shrinks a copy to 1600px, applies the film look, stamps the date.
+3. Both versions upload to the **`party-photos`** bucket.
+4. You view them at **Storage → party-photos** in the dashboard. The bucket is
+   **private** — guests can add photos but cannot browse anyone else's, and
+   there are no public links.
+5. "Save to my phone" is a plain local download and touches no server.
+
+If the original fails to upload, or is over the 20MB cap in `camera.js`, the
+guest never sees an error — they've already been thanked and the film version
+is safely stored.
+
+> **Watch your storage.** Originals are roughly 10× the size of the developed
+> copies, so this adds up much faster than film-only would. Check the free
+> tier's storage limit on your project's usage page early. If it's tight,
+> lower `maxOriginalMB` in `camera.js` or set `keepOriginal: false`.
+
+> Want a live photo slideshow on the TV? That needs a public bucket — a small
+> change to `schema.sql` plus a gallery page. Ask and I'll build it.
 
 ### Previewing before it's live
 

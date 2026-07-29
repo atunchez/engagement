@@ -18,6 +18,12 @@ const FILM = {
   vignette: "#a2887a", // edge colour, multiplied in. Darker = heavier
   leak: "rgba(255, 138, 60, 0.3)", // corner light leak
   stampColor: "rgba(255, 168, 60, 0.95)",
+
+  // Also keep the guest's untouched original, so a clean copy survives for
+  // prints or a slideshow later. Uploaded in the background after the film
+  // version, so nobody waits on a 10MB file over party wifi.
+  keepOriginal: true,
+  maxOriginalMB: 20,
 };
 
 const els = {
@@ -34,7 +40,9 @@ const els = {
 };
 
 const ctx = els.canvas.getContext("2d", { willReadFrequently: true });
-let developed = null; // data URL of the finished photo
+let developed = null;     // data URL, for the "save to my phone" link
+let developedBlob = null; // the same image as a blob, for uploading
+let originalFile = null;  // exactly what came off their phone, unmodified
 
 // ===== INPUT =====
 
@@ -69,11 +77,13 @@ async function handleFile(file) {
   els.result.hidden = true;
   els.working.hidden = false;
   setStatus("");
+  originalFile = file;
 
   try {
     const image = await loadImage(file);
     develop(image);
     developed = els.canvas.toDataURL("image/jpeg", FILM.quality);
+    developedBlob = await canvasBlob();
     els.downloadBtn.href = developed;
     els.working.hidden = true;
     els.result.hidden = false;
@@ -228,43 +238,76 @@ function autoDate() {
 
 // ===== SENDING =====
 
-els.sendBtn.addEventListener("click", async () => {
-  if (!developed) return;
+function canvasBlob() {
+  return new Promise((resolve) =>
+    els.canvas.toBlob(resolve, "image/jpeg", FILM.quality)
+  );
+}
 
-  const endpoint = partyEndpoint();
-  if (!endpoint) {
-    setStatus("Setup not finished — add the party Web App URL in config.js.", true);
+els.sendBtn.addEventListener("click", async () => {
+  if (!developedBlob) return;
+
+  if (!isConfigured()) {
+    setStatus("Setup not finished — add your Supabase details in config.js.", true);
     return;
   }
 
   els.sendBtn.disabled = true;
   setStatus("Sending…");
 
-  try {
-    // text/plain avoids a CORS preflight, which Apps Script doesn't answer.
-    await fetch(endpoint, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({
-        type: "photo",
-        name: els.name.value.trim(),
-        photoData: developed.split(",")[1], // strip the data: prefix
-        photoType: "image/jpeg",
-        photoName: "party.jpg",
-      }),
-    });
+  const who = els.name.value.trim();
 
-    // With no-cors we can't read the response, so we assume it landed.
+  try {
+    // The small developed version first — this is the one that must land.
+    const sent = await uploadPhoto(developedBlob, who, { kind: "film" });
     setStatus("Sent — thank you! 💛 Take another if you like.");
+
+    // Then the original, in the background. Deliberately not awaited: it can
+    // be 10MB+ and nobody should stand there watching a progress bar.
+    sendOriginal(sent.id, who);
   } catch (err) {
     setStatus("Couldn't send it. Save it to your phone and text it to us?", true);
     els.sendBtn.disabled = false;
   }
 });
 
+// Best effort. If it fails the guest never hears about it — they've already
+// been thanked, and the film version is safely stored.
+function sendOriginal(id, who) {
+  if (!FILM.keepOriginal || !originalFile) return;
+
+  if (originalFile.size > FILM.maxOriginalMB * 1024 * 1024) {
+    console.warn(
+      "Skipping original: " +
+        Math.round(originalFile.size / 1048576) +
+        "MB exceeds the " + FILM.maxOriginalMB + "MB cap."
+    );
+    return;
+  }
+
+  const file = originalFile; // capture, in case they load another photo
+  uploadPhoto(file, who, {
+    id: id,
+    kind: "original",
+    ext: extensionFor(file),
+    contentType: file.type || "application/octet-stream",
+  }).catch(() => {
+    /* nothing to do — the film version already made it */
+  });
+}
+
+function extensionFor(file) {
+  const fromName = (file.name || "").split(".").pop();
+  if (fromName && fromName.length <= 5 && fromName !== file.name) return fromName;
+
+  const fromType = (file.type || "").split("/").pop();
+  return fromType || "jpg";
+}
+
 els.againBtn.addEventListener("click", () => {
   developed = null;
+  developedBlob = null;
+  originalFile = null;
   els.input.value = "";
   els.result.hidden = true;
   els.sendBtn.disabled = false;

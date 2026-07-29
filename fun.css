@@ -146,6 +146,13 @@
   text-decoration-color: rgba(138, 63, 55, 0.5);
 }
 .option.is-dimmed { opacity: 0.45; }
+/* Before the answers are released: shows what they picked, not whether
+   it was right. */
+.option.is-locked {
+  border-color: var(--accent);
+  background: #fdf7f1;
+  font-weight: 500;
+}
 
 /* timeline sort */
 .quiz__order { display: flex; flex-direction: column; gap: 0.6rem; }
@@ -185,6 +192,7 @@
 .order__btn:disabled { opacity: 0.25; cursor: default; }
 .order__row.is-correct { border-color: #5c8a5e; background: #f2f8f1; }
 .order__row.is-wrong { border-color: #c2726a; background: #fbf1ef; }
+.order__row.is-locked { border-color: var(--accent); background: #fdf7f1; }
 .order__answer {
   margin-top: 1rem;
   font-size: 0.9rem;
@@ -204,6 +212,7 @@
 }
 .quiz__verdict.is-right { color: #4a7a4c; }
 .quiz__verdict.is-wrong { color: #a8544b; }
+.quiz__verdict.is-locked { color: var(--accent-deep); }
 .quiz__note {
   color: var(--muted);
   font-size: 0.95rem;
@@ -255,6 +264,71 @@
 }
 .quiz__replay:hover { color: var(--accent-deep); }
 
+/* waiting for the answers to be released */
+.quiz__pending {
+  max-width: 28rem;
+  margin: 0 auto 2rem;
+  padding: 1.1rem 1.3rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+/* the reveal */
+.review {
+  margin-top: 3rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--line);
+  text-align: left;
+}
+.review h3 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.9rem;
+  font-weight: 500;
+  color: var(--accent-deep);
+  text-align: center;
+  margin-bottom: 1.6rem;
+}
+.review__item {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 1rem;
+}
+.review__item.is-right { border-left-color: #5c8a5e; }
+.review__item.is-wrong { border-left-color: #c2726a; }
+.review__item.is-skipped { border-left-color: var(--line); }
+.review__q {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.3rem;
+  line-height: 1.3;
+  color: var(--accent-deep);
+  margin-bottom: 0.7rem;
+}
+.review__line { font-size: 0.93rem; line-height: 1.6; color: var(--ink); }
+.review__line strong {
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.review__note {
+  margin-top: 0.7rem;
+  padding-top: 0.7rem;
+  border-top: 1px dashed var(--line);
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
 /* leaderboard */
 .leaderboard {
   margin-top: 3.5rem;
@@ -291,6 +365,120 @@
 .leaderboard li .lb__score { color: var(--muted); font-size: 0.9rem; }
 .leaderboard li.is-you { font-weight: 500; color: var(--accent-deep); }
 .leaderboard li.is-you .lb__score { color: var(--accent-deep); }
+
+/* ===================================================================
+   TV LEADERBOARD (board.html)
+   Dark, big, readable from across a room.
+   =================================================================== */
+.board {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #17110d;
+  color: #f6ece1;
+  padding: 3vh 4vw;
+}
+.board__head { text-align: center; margin-bottom: 3vh; }
+.board__head h1 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(2rem, 4.6vw, 4rem);
+  font-weight: 500;
+  color: #f3ddc4;
+}
+.board__sub {
+  font-size: clamp(0.8rem, 1.2vw, 1.05rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #a08a76;
+  margin-top: 0.6rem;
+}
+
+.board__grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 4vw;
+  align-items: start;
+}
+.board__col h2 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(1.3rem, 2.2vw, 2rem);
+  font-weight: 500;
+  color: #c9a882;
+  padding-bottom: 0.6rem;
+  margin-bottom: 1.2rem;
+  border-bottom: 1px solid #3a2c22;
+}
+.board__empty { color: #7d6a5a; font-style: italic; }
+
+.board__list { list-style: none; }
+.board__row {
+  display: flex;
+  align-items: center;
+  gap: 1.2vw;
+  padding: 1.1vh 0.5vw;
+  border-bottom: 1px solid #29201a;
+  font-size: clamp(1rem, 2vw, 1.9rem);
+}
+.board__rank {
+  font-family: "Cormorant Garamond", serif;
+  color: #8a7157;
+  min-width: 2ch;
+  text-align: right;
+}
+.board__name { flex: 1; font-weight: 300; }
+.board__score {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 500;
+  color: #e8c9a0;
+}
+.board__row.is-first .board__name,
+.board__row.is-first .board__score { color: #ffd9a8; font-weight: 500; }
+
+.board__stat { margin-bottom: 2.2vh; }
+.board__stat-q {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(0.95rem, 1.5vw, 1.4rem);
+  color: #f0e2d2;
+  margin-bottom: 0.6rem;
+}
+.board__bar {
+  height: 9px;
+  background: #2c2119;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.board__bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #b08968, #e8c9a0);
+  transition: width 0.6s ease;
+}
+.board__stat-n {
+  margin-top: 0.4rem;
+  font-size: clamp(0.7rem, 1vw, 0.9rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8d7864;
+}
+
+.board__foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3vh;
+  padding-top: 1.5vh;
+  border-top: 1px solid #29201a;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #5f5044;
+}
+.board__foot .is-error { color: #a8695c; }
+.board__release.is-open { color: #9fbf8f; }
+
+@media (max-width: 780px) {
+  .board__grid { grid-template-columns: 1fr; gap: 4vh; }
+}
 
 /* ===================================================================
    DISPOSABLE CAMERA

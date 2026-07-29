@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaderboard — Alex &amp; Amanda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=2" />
+  <link rel="stylesheet" href="fun.css?v=1" />
+</head>
+<!--
+  For the TV, not for guests. Open it on a laptop, cast it, press F for
+  fullscreen. It refreshes itself, so leave it running.
+-->
+<body class="board">
+
+  <header class="board__head">
+    <h1>How well do you know us?</h1>
+    <p class="board__sub" id="played">—</p>
+  </header>
+
+  <main class="board__grid">
+    <section class="board__col">
+      <h2>Leaderboard</h2>
+      <ol class="board__list" id="list">
+        <li class="board__empty">Waiting for the first score…</li>
+      </ol>
+    </section>
+
+    <section class="board__col">
+      <h2>Hardest questions</h2>
+      <div class="board__stats" id="stats">
+        <p class="board__empty">Nobody's played yet.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="board__foot">
+    <span id="status">connecting…</span>
+    <span class="board__release" id="release"></span>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="api.js"></script>
+  <script src="quiz-data.js"></script>
+  <script src="board.js"></script>
+</body>
+</html>

@@ -1,11 +1,18 @@
 // ===================================================================
 //  QUIZ ENGINE
-//  You shouldn't need to edit this file — the questions live in
-//  quiz-data.js and the endpoint lives in config.js.
+//  Questions live in quiz-data.js. Keys and tunables live in config.js.
+//  Network calls live in api.js.
+//
+//  Answers stay hidden until Alex flips `answers_released` in the Supabase
+//  dashboard. Until then a guest sees "Locked in" and, at the end, their
+//  score but not which ones they missed. Their picks are kept in this
+//  browser, so once the answers drop they can see exactly what they got
+//  wrong — with the stories attached.
 // ===================================================================
 
 const POINTS_PER_Q = 10;
 const TOTAL_POINTS = POINTS_PER_Q * QUESTIONS.length;
+const STORAGE_KEY = "engagement-quiz-result-v1";
 
 const screens = {
   start: document.getElementById("screen-start"),
@@ -17,6 +24,7 @@ const el = {
   title: document.getElementById("quizTitle"),
   intro: document.getElementById("quizIntro"),
   startBtn: document.getElementById("startBtn"),
+  resumeBtn: document.getElementById("resumeBtn"),
   progressFill: document.getElementById("progressFill"),
   progressText: document.getElementById("progressText"),
   question: document.getElementById("questionText"),
@@ -33,16 +41,53 @@ const el = {
   scoreForm: document.getElementById("scoreForm"),
   scoreStatus: document.getElementById("scoreStatus"),
   replayBtn: document.getElementById("replayBtn"),
+  pending: document.getElementById("pending"),
+  revealBtn: document.getElementById("revealBtn"),
+  review: document.getElementById("review"),
   leaderboard: document.getElementById("leaderboard"),
   leaderboardList: document.getElementById("leaderboardList"),
 };
 
 let index = 0;
 let score = 0;
-let displayOrder = []; // for "order" questions: item indices as shown
+let displayOrder = [];   // for "order" questions: item indices as shown
+let detail = [];         // full per-question record, kept in this browser only
+let answersReleased = false;
+let releaseTimer = null;
 
 el.title.textContent = QUIZ_TITLE;
 el.intro.textContent = QUIZ_INTRO;
+
+boot();
+
+async function boot() {
+  answersReleased = await resolveRelease();
+
+  // Someone coming back after the answers dropped.
+  const saved = loadSaved();
+  if (saved) {
+    el.resumeBtn.hidden = false;
+    el.resumeBtn.textContent = answersReleased
+      ? "See how you did"
+      : "See your score";
+  }
+}
+
+// Withheld by default: if the switch can't be read, don't leak answers.
+async function resolveRelease() {
+  const override = new URLSearchParams(location.search).get("reveal");
+  if (override === "1") return true;
+  if (override === "0") return false;
+
+  // Local preview before Supabase is set up — show everything.
+  if (!isConfigured()) return true;
+
+  try {
+    return await getAnswersReleased();
+  } catch (err) {
+    return false;
+  }
+}
 
 function show(name) {
   Object.values(screens).forEach((s) => s.classList.remove("is-active"));
@@ -61,7 +106,7 @@ function shuffled(length) {
   return isSorted && length > 1 ? shuffled(length) : a;
 }
 
-// ===== QUESTION RENDERING =====
+// ===== QUESTIONS =====
 
 function render() {
   const q = QUESTIONS[index];
@@ -78,7 +123,6 @@ function render() {
     el.options.hidden = true;
     el.orderList.hidden = false;
     el.checkOrderBtn.hidden = false;
-    el.checkOrderBtn.disabled = false;
     displayOrder = shuffled(q.items.length);
     renderOrderRows(q, false);
   } else {
@@ -104,8 +148,16 @@ function answerChoice(q, chosen) {
   const right = chosen === q.correct;
   if (right) score += POINTS_PER_Q;
 
+  detail.push({ q: index, right: right, chosen: chosen });
+
   Array.from(el.options.children).forEach((btn, i) => {
     btn.disabled = true;
+    if (!answersReleased) {
+      // Show only what they picked — no hint as to whether it's right.
+      if (i === chosen) btn.classList.add("is-locked");
+      else btn.classList.add("is-dimmed");
+      return;
+    }
     if (i === q.correct) btn.classList.add("is-correct");
     else if (i === chosen) btn.classList.add("is-wrong");
     else btn.classList.add("is-dimmed");
@@ -132,7 +184,11 @@ function renderOrderRows(q, locked) {
     row.append(num, label);
 
     if (locked) {
-      row.classList.add(itemIdx === pos ? "is-correct" : "is-wrong");
+      if (answersReleased) {
+        row.classList.add(itemIdx === pos ? "is-correct" : "is-wrong");
+      } else {
+        row.classList.add("is-locked");
+      }
     } else {
       const ctrls = document.createElement("span");
       ctrls.className = "order__ctrls";
@@ -169,31 +225,48 @@ function checkOrder() {
 
   score += Math.round((POINTS_PER_Q * rightSpots) / q.items.length);
 
+  // Record the order they submitted, as item labels.
+  detail.push({
+    q: index,
+    right: perfect,
+    order: displayOrder.map((i) => q.items[i]),
+  });
+
   el.checkOrderBtn.hidden = true;
   renderOrderRows(q, true);
 
-  if (!perfect) {
-    const answer = document.createElement("p");
-    answer.className = "order__answer";
-    answer.innerHTML = "<strong>The real order:</strong> ";
-    answer.append(document.createTextNode(q.items.join(" → ")));
-    el.orderList.appendChild(answer);
+  if (answersReleased && !perfect) {
+    el.orderList.appendChild(realOrderLine(q));
   }
 
   giveFeedback(
     perfect,
-    perfect
-      ? "Perfect order."
-      : `${rightSpots} of ${q.items.length} in the right spot.`,
+    perfect ? "Perfect order." : `${rightSpots} of ${q.items.length} in the right spot.`,
     q.note
   );
 }
 
+function realOrderLine(q) {
+  const p = document.createElement("p");
+  p.className = "order__answer";
+  p.innerHTML = "<strong>The real order:</strong> ";
+  p.append(document.createTextNode(q.items.join(" → ")));
+  return p;
+}
+
 function giveFeedback(right, verdict, note) {
-  el.verdict.textContent = verdict;
-  el.verdict.className = "quiz__verdict " + (right ? "is-right" : "is-wrong");
-  el.note.textContent = note || "";
-  el.note.hidden = !note;
+  if (answersReleased) {
+    el.verdict.textContent = verdict;
+    el.verdict.className = "quiz__verdict " + (right ? "is-right" : "is-wrong");
+    el.note.textContent = note || "";
+    el.note.hidden = !note;
+  } else {
+    el.verdict.textContent = "Locked in.";
+    el.verdict.className = "quiz__verdict is-locked";
+    el.note.textContent = "";
+    el.note.hidden = true;
+  }
+
   el.feedback.hidden = false;
   el.nextBtn.textContent = index === QUESTIONS.length - 1 ? "See my score" : "Next";
 }
@@ -207,8 +280,14 @@ function next() {
 // ===== RESULTS =====
 
 function finish() {
+  save();
+  showResult();
+}
+
+function showResult() {
   const percent = Math.round((score / TOTAL_POINTS) * 100);
-  const tier = SCORE_TIERS.find((t) => percent >= t.min) || SCORE_TIERS[SCORE_TIERS.length - 1];
+  const tier =
+    SCORE_TIERS.find((t) => percent >= t.min) || SCORE_TIERS[SCORE_TIERS.length - 1];
 
   el.scoreLine.innerHTML = "";
   el.scoreLine.append(document.createTextNode(String(score)));
@@ -219,8 +298,130 @@ function finish() {
   el.tierLabel.textContent = tier.label;
   el.tierBlurb.textContent = tier.blurb;
 
+  applyReleaseState();
   show("result");
 }
+
+// Called on the results screen, and again whenever the switch is polled.
+function applyReleaseState() {
+  el.pending.hidden = answersReleased;
+  el.revealBtn.hidden = !answersReleased;
+
+  if (answersReleased) {
+    stopPolling();
+  } else {
+    startPolling();
+  }
+}
+
+function startPolling() {
+  if (releaseTimer || !isConfigured()) return;
+  releaseTimer = setInterval(async () => {
+    try {
+      if (await getAnswersReleased()) {
+        answersReleased = true;
+        applyReleaseState();
+      }
+    } catch (err) {
+      /* try again on the next tick */
+    }
+  }, RELEASE_POLL_MS);
+}
+
+function stopPolling() {
+  clearInterval(releaseTimer);
+  releaseTimer = null;
+}
+
+// ===== THE REVEAL =====
+
+function renderReview() {
+  const saved = loadSaved() || { detail: detail };
+  const byQuestion = {};
+  (saved.detail || []).forEach((d) => { byQuestion[d.q] = d; });
+
+  el.review.innerHTML = "";
+
+  const heading = document.createElement("h3");
+  heading.textContent = "The answers";
+  el.review.appendChild(heading);
+
+  QUESTIONS.forEach((q, i) => {
+    const d = byQuestion[i];
+
+    const item = document.createElement("div");
+    // No record means they never got to this one — neither right nor wrong.
+    item.className =
+      "review__item " + (!d ? "is-skipped" : d.right ? "is-right" : "is-wrong");
+
+    const ask = document.createElement("p");
+    ask.className = "review__q";
+    ask.textContent = q.question;
+    item.appendChild(ask);
+
+    if (q.type === "order") {
+      item.appendChild(
+        reviewLine("You had", d && d.order ? d.order.join(" → ") : "—")
+      );
+      item.appendChild(reviewLine("Actually", q.items.join(" → ")));
+    } else {
+      item.appendChild(
+        reviewLine(
+          "You said",
+          d && typeof d.chosen === "number" ? q.options[d.chosen] : "—"
+        )
+      );
+      item.appendChild(reviewLine("Actually", q.options[q.correct]));
+    }
+
+    if (q.note) {
+      const note = document.createElement("p");
+      note.className = "review__note";
+      note.textContent = q.note;
+      item.appendChild(note);
+    }
+
+    el.review.appendChild(item);
+  });
+
+  el.review.hidden = false;
+  el.review.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function reviewLine(label, value) {
+  const p = document.createElement("p");
+  p.className = "review__line";
+  const strong = document.createElement("strong");
+  strong.textContent = label + ": ";
+  p.append(strong, document.createTextNode(value));
+  return p;
+}
+
+// ===== SAVING =====
+
+function save() {
+  try {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ score: score, total: TOTAL_POINTS, detail: detail })
+    );
+  } catch (err) {
+    /* private browsing — the quiz still works, they just can't come back */
+  }
+}
+
+function loadSaved() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && parsed.total === TOTAL_POINTS ? parsed : null;
+  } catch (err) {
+    return null;
+  }
+}
+
+// ===== POSTING THE SCORE =====
 
 el.scoreForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -230,10 +431,9 @@ el.scoreForm.addEventListener("submit", async (e) => {
   const name = nameField.value.trim();
   if (!name) return;
 
-  const endpoint = partyEndpoint();
-  if (!endpoint) {
+  if (!isConfigured()) {
     el.scoreStatus.textContent =
-      "Setup not finished — add the party Web App URL in config.js.";
+      "Setup not finished — add your Supabase details in config.js.";
     el.scoreStatus.classList.add("error");
     return;
   }
@@ -244,27 +444,17 @@ el.scoreForm.addEventListener("submit", async (e) => {
   el.scoreStatus.textContent = "Posting…";
 
   try {
-    // text/plain avoids a CORS preflight, which Apps Script doesn't answer.
-    await fetch(endpoint, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({
-        type: "quiz",
-        name: name,
-        score: score,
-        total: TOTAL_POINTS,
-        percent: Math.round((score / TOTAL_POINTS) * 100),
-      }),
+    await postScore({
+      name: name,
+      score: score,
+      total: TOTAL_POINTS,
+      // Only whether each one was right — not what they picked.
+      answers: detail.map((d) => ({ q: d.q, right: d.right })),
     });
 
-    el.scoreForm.querySelector("input").disabled = true;
+    nameField.disabled = true;
     el.scoreStatus.textContent = "Posted. Go find us and argue about question 7.";
-
-    if (SHOW_LEADERBOARD) {
-      // Give the Sheet a moment to record the row before we read it back.
-      setTimeout(() => loadLeaderboard(name), 1500);
-    }
+    loadLeaderboard(name);
   } catch (err) {
     el.scoreStatus.textContent = "Couldn't post your score — but you still played.";
     el.scoreStatus.classList.add("error");
@@ -273,18 +463,16 @@ el.scoreForm.addEventListener("submit", async (e) => {
 });
 
 async function loadLeaderboard(you) {
-  const endpoint = partyEndpoint();
-  if (!endpoint) return;
+  if (!isConfigured()) return;
 
   try {
-    const res = await fetch(endpoint + "?action=leaderboard");
-    const rows = await res.json();
-    if (!Array.isArray(rows) || !rows.length) return;
+    const rows = await getLeaderboard(10);
+    if (!rows.length) return;
 
     el.leaderboardList.innerHTML = "";
     let youHighlighted = false;
 
-    rows.slice(0, 10).forEach((row) => {
+    rows.forEach((row) => {
       const li = document.createElement("li");
 
       const nameEl = document.createElement("span");
@@ -294,7 +482,7 @@ async function loadLeaderboard(you) {
       scoreEl.className = "lb__score";
       scoreEl.textContent = row.score + " / " + (row.total || TOTAL_POINTS);
 
-      // Highlight the first row that matches this player's name and score.
+      // Highlight the first row matching this player's name and score.
       if (!youHighlighted && you && row.name === you && Number(row.score) === score) {
         li.classList.add("is-you");
         youHighlighted = true;
@@ -306,7 +494,7 @@ async function loadLeaderboard(you) {
 
     el.leaderboard.hidden = false;
   } catch (err) {
-    // Leaderboard is a nice-to-have; if it can't load, just leave it hidden.
+    // The leaderboard is a nice-to-have; leave it hidden if it won't load.
   }
 }
 
@@ -315,21 +503,34 @@ async function loadLeaderboard(you) {
 el.startBtn.addEventListener("click", () => {
   index = 0;
   score = 0;
+  detail = [];
   render();
   show("play");
 });
 
+el.resumeBtn.addEventListener("click", () => {
+  const saved = loadSaved();
+  if (!saved) return;
+  score = saved.score;
+  detail = saved.detail || [];
+  showResult();
+});
+
 el.nextBtn.addEventListener("click", next);
 el.checkOrderBtn.addEventListener("click", checkOrder);
+el.revealBtn.addEventListener("click", renderReview);
 
 el.replayBtn.addEventListener("click", () => {
   index = 0;
   score = 0;
+  detail = [];
   el.scoreForm.reset();
   el.scoreForm.querySelector("input").disabled = false;
   el.scoreForm.querySelector(".form__submit").disabled = false;
   el.scoreStatus.textContent = "";
+  el.scoreStatus.classList.remove("error");
   el.leaderboard.hidden = true;
+  el.review.hidden = true;
   render();
   show("play");
 });
