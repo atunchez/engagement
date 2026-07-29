@@ -90,21 +90,38 @@ Open **`quiz-data.js`**. Every `TODO` is a placeholder. For each question:
 
 Add or remove questions freely — the scoring adjusts to however many there are.
 
-### Re-deploy the Apps Script (required — do this once)
+### Set up the party Sheet (required — about 10 minutes, once)
 
-`Code.gs` changed: it now also files quiz scores and party photos. Apps Script
-keeps running the old code until you publish a new version:
+The party pages use a **separate spreadsheet and a separate script** from the
+RSVP form. Nothing here can write to your RSVP sheet, and your live RSVP form
+is never re-deployed or touched.
 
-**Extensions → Apps Script**, paste in the new `Code.gs`, Save, then
-**Deploy → Manage deployments → pencil ✏️ → Version: New version → Deploy.**
+1. Go to **[sheets.new](https://sheets.new)** for a brand-new, empty Sheet.
+   Name it something like "Engagement Party Games". **Do not use the RSVP
+   Sheet.**
+2. In that new Sheet: **Extensions → Apps Script**.
+3. Delete the placeholder code and **paste the entire contents of `Party.gs`**
+   (not `Code.gs` — that one belongs to the RSVP Sheet and stays where it is).
+   Save 💾.
+4. **Deploy → New deployment** → gear ⚙️ → **Web app**.
+   - **Execute as:** *Me*
+   - **Who has access:** **Anyone** ← required
+   - **Deploy**, then authorize when prompted (Advanced → Go to … → Allow).
+5. Copy the **Web app URL** (it ends in `/exec`).
+6. Open **`config.js`** and paste it over `PASTE_THE_PARTY_WEB_APP_URL_HERE`.
 
-You do *not* need a new URL — the existing one keeps working. Afterwards your
-Sheet grows two new tabs (`Quiz Scores`, `Party Photos`) the first time each
-one receives something.
+That's it. Two tabs (`Quiz Scores`, `Photos`) appear in the new Sheet the first
+time each receives something, and guest photos land in a Drive folder called
+"Engagement Party Photos".
 
-> The Web App URL lives in **two** files now: `script.js` (RSVP) and
-> `config.js` (quiz + camera). If you ever create a *new* deployment and the
-> URL changes, update both.
+> **The two URLs must be different.** `script.js` holds the RSVP URL;
+> `config.js` holds the party URL. If you paste the RSVP URL into `config.js`,
+> the quiz and camera detect it and refuse to send anything rather than
+> dropping junk rows in your RSVP sheet.
+
+> **If you later edit `Party.gs`**, re-deploy it: **Deploy → Manage
+> deployments → pencil ✏️ → Version: New version → Deploy.** This is entirely
+> separate from the RSVP deployment.
 
 ### Previewing before it's live
 

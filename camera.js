@@ -231,12 +231,18 @@ function autoDate() {
 els.sendBtn.addEventListener("click", async () => {
   if (!developed) return;
 
+  const endpoint = partyEndpoint();
+  if (!endpoint) {
+    setStatus("Setup not finished — add the party Web App URL in config.js.", true);
+    return;
+  }
+
   els.sendBtn.disabled = true;
   setStatus("Sending…");
 
   try {
     // text/plain avoids a CORS preflight, which Apps Script doesn't answer.
-    await fetch(ENDPOINT, {
+    await fetch(endpoint, {
       method: "POST",
       mode: "no-cors",
       headers: { "Content-Type": "text/plain;charset=utf-8" },

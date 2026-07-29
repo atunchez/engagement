@@ -230,6 +230,14 @@ el.scoreForm.addEventListener("submit", async (e) => {
   const name = nameField.value.trim();
   if (!name) return;
 
+  const endpoint = partyEndpoint();
+  if (!endpoint) {
+    el.scoreStatus.textContent =
+      "Setup not finished — add the party Web App URL in config.js.";
+    el.scoreStatus.classList.add("error");
+    return;
+  }
+
   const submitBtn = el.scoreForm.querySelector(".form__submit");
   submitBtn.disabled = true;
   el.scoreStatus.classList.remove("error");
@@ -237,7 +245,7 @@ el.scoreForm.addEventListener("submit", async (e) => {
 
   try {
     // text/plain avoids a CORS preflight, which Apps Script doesn't answer.
-    await fetch(ENDPOINT, {
+    await fetch(endpoint, {
       method: "POST",
       mode: "no-cors",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -265,8 +273,11 @@ el.scoreForm.addEventListener("submit", async (e) => {
 });
 
 async function loadLeaderboard(you) {
+  const endpoint = partyEndpoint();
+  if (!endpoint) return;
+
   try {
-    const res = await fetch(ENDPOINT + "?action=leaderboard");
+    const res = await fetch(endpoint + "?action=leaderboard");
     const rows = await res.json();
     if (!Array.isArray(rows) || !rows.length) return;
 
