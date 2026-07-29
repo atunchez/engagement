@@ -115,6 +115,18 @@ That's it — no deployments, no re-deployments.
 > browser. What it's allowed to do is fixed by the policies in `schema.sql`.
 > **Never** put the `service_role` key here — that one bypasses every policy.
 
+> ### ⚠️ Check this the morning of the party
+>
+> Free-tier Supabase projects **pause after about a week of no activity**. If
+> you set this up weeks ahead and don't touch it, it will likely be asleep by
+> Aug 29.
+>
+> Nothing is lost — you click **Resume** and it's back in a minute or two — but
+> don't find out while guests are standing there. **On the morning of the
+> party:** open the dashboard, confirm the project is running, then load
+> `quiz.html` and post a test score. Delete the test row afterwards in the
+> Table Editor.
+
 ### Releasing the answers — your switch
 
 Until you flip it, guests answer, see "Locked in", and get their final score
