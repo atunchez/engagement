@@ -134,8 +134,11 @@ without learning *which* ones they missed. Their picks are saved in their own
 browser, so the moment you release, they can pull up exactly what they got
 wrong with your stories attached.
 
-**To release, from your phone:** Supabase dashboard → **Table Editor** →
-`settings` → the single row → set **`answers_released`** to **true** → save.
+**To release, from your phone:** open **`admin.html`**, sign in, tap
+**Release the answers**. See "Your controls page" below.
+
+(The dashboard still works as a fallback: **Table Editor** → `settings` → the
+single row → set **`answers_released`** to **true** → save.)
 
 > **Don't delete that row.** It's the switch. If it goes missing, the quiz
 > stays sealed forever — safe, but you lose the ability to release. To get it
@@ -207,6 +210,32 @@ photos everyone has sent, newest first. It's **off by default**.
 > public bucket. To *actually* cut off access after the party: **Storage →
 > party-photos → bucket settings → turn off Public.** The originals were never
 > public, so they need nothing.
+
+### Your controls page
+
+**`admin.html`** is both switches on one page, behind a real sign-in. Not
+linked from anywhere and marked `noindex`, so guests won't stumble onto it.
+
+**Set it up once (about 5 minutes):**
+
+1. **Authentication → Users → Add user.** Use your email, pick a password,
+   and tick **Auto Confirm User** so there's no confirmation email to chase.
+2. **Turn off public signups.** Authentication → **Sign In / Providers** →
+   Email → switch off **Allow new users to sign up**. Without this, a stranger
+   could register an account.
+3. Check that the email you used appears in the **ADMIN ACCESS** list near the
+   bottom of `schema.sql`. If it doesn't, edit it and re-run the file. Want
+   Amanda to have her own login? Add her as a user and add her email there too.
+4. On your iPhone: open `admin.html` in Safari, sign in, then **Share → Add to
+   Home Screen.** It opens like an app, and the session is remembered.
+
+**Two layers keep guests out of it.** Signups are off, so they can't get an
+account. And the database only accepts switch changes from the specific emails
+listed in `schema.sql` — so even an account that somehow got created can't
+change anything.
+
+> If `admin.html` says *"That account isn't allowed to change this"*, the email
+> you signed in with isn't in that list in `schema.sql`. Add it and re-run.
 
 ### Taking a photo down, mid-party
 

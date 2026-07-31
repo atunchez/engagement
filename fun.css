@@ -384,6 +384,114 @@
 .leaderboard li.is-you .lb__score { color: var(--accent-deep); }
 
 /* ===================================================================
+   ADMIN CONTROLS (admin.html)
+   =================================================================== */
+.admin__inner {
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: 4rem 1.4rem 5rem;
+}
+.admin__screen { display: none; }
+.admin__screen.is-active { display: block; animation: fadeUp 0.35s ease both; }
+.admin__intro { text-align: center; color: var(--muted); margin-bottom: 2.2rem; }
+.admin__form { max-width: 22rem; margin: 0 auto; }
+.admin__who {
+  text-align: center;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2.2rem;
+}
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.3rem 1.4rem;
+  margin-bottom: 1.1rem;
+}
+.switch__text { flex: 1; }
+.switch__text h2 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--accent-deep);
+  margin-bottom: 0.25rem;
+}
+.switch__state {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+.switch__state.is-on { color: #4a7a4c; }
+.switch__state.is-off { color: var(--muted); }
+.switch__hint { font-size: 0.85rem; line-height: 1.55; color: var(--muted); }
+
+.switch__btn {
+  flex-shrink: 0;
+  max-width: 8.5rem;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.35;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--white);
+  cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+.switch__btn:hover:not(:disabled) { background: var(--accent-deep); }
+.switch__btn:disabled { opacity: 0.45; cursor: default; }
+/* When something is live, the button turns it off — make that read as undo. */
+.switch__btn.is-on {
+  background: transparent;
+  color: var(--accent-deep);
+}
+.switch__btn.is-on:hover:not(:disabled) { background: #f4e7dc; }
+
+.admin__links {
+  display: flex;
+  justify-content: center;
+  gap: 1.4rem;
+  margin: 2.4rem 0 1.6rem;
+}
+.admin__links a {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+}
+.admin__links a:hover { border-color: var(--accent-deep); }
+
+.admin .quiz__replay { display: block; margin: 0 auto; }
+.admin__note {
+  margin-top: 2.8rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 430px) {
+  .switch { flex-direction: column; align-items: stretch; gap: 1rem; }
+  .switch__btn { max-width: none; }
+}
+
+/* ===================================================================
    TV LEADERBOARD (board.html)
    Dark, big, readable from across a room.
    =================================================================== */

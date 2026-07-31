@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Controls — Alex &amp; Amanda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=2" />
+  <link rel="stylesheet" href="fun.css?v=3" />
+</head>
+<!--
+  Just for the two of you. Not linked from anywhere, and the switches are
+  protected by a real sign-in — see ADMIN ACCESS in schema.sql.
+
+  On your iPhone: open this in Safari, then Share → Add to Home Screen.
+-->
+<body class="page admin">
+
+  <main class="admin__inner">
+
+    <!-- ===== SIGN IN ===== -->
+    <section class="admin__screen is-active" id="screen-login">
+      <h1 class="section-title">Controls</h1>
+      <p class="admin__intro">Sign in to run the party.</p>
+
+      <form class="form admin__form" id="loginForm">
+        <label class="form__field">
+          <span>Email</span>
+          <input type="email" name="email" autocomplete="username" required />
+        </label>
+        <label class="form__field">
+          <span>Password</span>
+          <input type="password" name="password" autocomplete="current-password" required />
+        </label>
+        <button type="submit" class="btn form__submit">Sign in</button>
+        <p class="form__status" id="loginStatus" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- ===== THE SWITCHES ===== -->
+    <section class="admin__screen" id="screen-panel">
+      <h1 class="section-title">Controls</h1>
+      <p class="admin__who" id="who"></p>
+
+      <div class="switch" id="answersSwitch">
+        <div class="switch__text">
+          <h2>The Answers</h2>
+          <p class="switch__state" id="answersState">—</p>
+          <p class="switch__hint" id="answersHint"></p>
+        </div>
+        <button class="switch__btn" id="answersBtn" disabled>—</button>
+      </div>
+
+      <div class="switch" id="collageSwitch">
+        <div class="switch__text">
+          <h2>The Wall</h2>
+          <p class="switch__state" id="collageState">—</p>
+          <p class="switch__hint" id="collageHint"></p>
+        </div>
+        <button class="switch__btn" id="collageBtn" disabled>—</button>
+      </div>
+
+      <p class="form__status" id="panelStatus" role="status" aria-live="polite"></p>
+
+      <div class="admin__links">
+        <a href="quiz.html">Quiz</a>
+        <a href="camera.html">Camera</a>
+        <a href="board.html">Leaderboard</a>
+      </div>
+
+      <button class="quiz__replay" id="signOutBtn">Sign out</button>
+
+      <p class="admin__note">
+        Removing a photo still needs the Supabase dashboard — that's where the
+        thumbnails are. See "Taking a photo down" in SETUP.md.
+      </p>
+    </section>
+
+  </main>
+
+  <script src="config.js?v=2"></script>
+  <script src="api.js?v=2"></script>
+  <script src="admin.js?v=2"></script>
+</body>
+</html>

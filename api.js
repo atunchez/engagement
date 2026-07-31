@@ -166,6 +166,161 @@ function photoUrl(path) {
   return SUPABASE_URL + "/storage/v1/object/public/" + PHOTO_BUCKET + "/" + path;
 }
 
+// ===== ADMIN SIGN-IN (admin.html only) =============================
+//
+// Supabase Auth handles the password, so there's no secret in this file. A
+// signed-in session is kept in localStorage and refreshed when it expires.
+
+const SESSION_KEY = "engagement-admin-session-v1";
+
+function loadSession() {
+  try {
+    return JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+  } catch (err) {
+    return null;
+  }
+}
+
+function storeSession(session) {
+  try {
+    localStorage.setItem(
+      SESSION_KEY,
+      JSON.stringify({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token,
+        // expires_in is seconds from now; keep an absolute time instead.
+        expires_at: Date.now() + (session.expires_in || 3600) * 1000,
+        email: session.user && session.user.email,
+      })
+    );
+  } catch (err) {
+    /* private browsing — they'll just have to sign in again */
+  }
+}
+
+function clearSession() {
+  try {
+    localStorage.removeItem(SESSION_KEY);
+  } catch (err) {
+    /* nothing to clear */
+  }
+}
+
+async function signIn(email, password) {
+  const res = await fetch(SUPABASE_URL + "/auth/v1/token?grant_type=password", {
+    method: "POST",
+    headers: { apikey: SUPABASE_ANON_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ email: email, password: password }),
+  });
+
+  if (!res.ok) {
+    let msg = "Sign-in failed.";
+    try {
+      const body = await res.json();
+      // GoTrue says "Invalid login credentials" for both wrong email and
+      // wrong password, which is the correct thing for it to do.
+      msg = body.error_description || body.msg || body.message || msg;
+    } catch (err) {
+      /* keep the generic message */
+    }
+    throw new Error(msg);
+  }
+
+  const session = await res.json();
+  storeSession(session);
+  return session;
+}
+
+async function refreshSession(refreshToken) {
+  const res = await fetch(
+    SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token",
+    {
+      method: "POST",
+      headers: { apikey: SUPABASE_ANON_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    }
+  );
+  if (!res.ok) throw new Error("Session expired — sign in again.");
+
+  const session = await res.json();
+  storeSession(session);
+  return session;
+}
+
+// Returns headers that act as the signed-in user, refreshing first if the
+// token is close to expiring. Throws if there's no usable session.
+async function adminHeaders() {
+  let session = loadSession();
+  if (!session || !session.access_token) throw new Error("Not signed in.");
+
+  // 60s of slack, so a token can't expire mid-request.
+  if (!session.expires_at || session.expires_at - Date.now() < 60000) {
+    session = await refreshSession(session.refresh_token);
+    session = loadSession();
+  }
+
+  return {
+    apikey: SUPABASE_ANON_KEY,
+    Authorization: "Bearer " + session.access_token,
+  };
+}
+
+async function signOut() {
+  const session = loadSession();
+  clearSession();
+  if (!session || !session.access_token) return;
+  try {
+    await fetch(SUPABASE_URL + "/auth/v1/logout", {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: "Bearer " + session.access_token,
+      },
+    });
+  } catch (err) {
+    // The local session is already gone, which is what matters here.
+  }
+}
+
+// Both switches at once, so the admin page can show real current state.
+async function getSwitches() {
+  const res = await fetch(
+    SUPABASE_URL + "/rest/v1/settings?select=answers_released,collage_visible&id=eq.1",
+    { headers: restHeaders() }
+  );
+  await failIfBad(res, "Reading the switches");
+  const rows = await res.json();
+  if (!rows.length) throw new Error("The settings row is missing — see SETUP.md.");
+  return rows[0];
+}
+
+// field: "answers_released" | "collage_visible"
+async function setSwitch(field, value) {
+  const body = {};
+  body[field] = value;
+  body.updated_at = new Date().toISOString();
+
+  const res = await fetch(SUPABASE_URL + "/rest/v1/settings?id=eq.1", {
+    method: "PATCH",
+    headers: Object.assign(await adminHeaders(), {
+      "Content-Type": "application/json",
+      Prefer: "return=representation",
+    }),
+    body: JSON.stringify(body),
+  });
+  await failIfBad(res, "Flipping the switch");
+
+  const rows = await res.json();
+  // RLS returns an empty array rather than an error when a row is off-limits,
+  // so an empty result here means "not allowed", not "worked".
+  if (!rows.length) {
+    throw new Error(
+      "That account isn't allowed to change this. Check the email list in schema.sql."
+    );
+  }
+  return rows[0];
+}
+
 async function getCollageVisible() {
   const res = await fetch(
     SUPABASE_URL + "/rest/v1/settings?select=collage_visible&id=eq.1",

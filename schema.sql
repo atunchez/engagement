@@ -116,3 +116,26 @@ create policy "anyone can read photo rows"
 -- the party, off afterwards.
 alter table settings
   add column if not exists collage_visible boolean not null default false;
+
+-- ===== ADMIN ACCESS (for admin.html) =============================
+--
+-- Lets you flip both switches from admin.html after signing in, instead of
+-- driving the dashboard on your phone. Guests still can't: the anon role has
+-- no update policy, so this only applies to a signed-in account.
+--
+-- >>> EDIT THIS LIST if you sign in with a different address, or to give
+-- >>> Amanda her own login. Emails must match the account exactly.
+--
+-- It's pinned to specific emails on purpose. Even if new signups are somehow
+-- left enabled, a stranger who registers still can't touch anything.
+
+drop policy if exists "only the couple can flip the switches" on settings;
+create policy "only the couple can flip the switches"
+  on settings for update to authenticated
+  using (
+    (auth.jwt() ->> 'email') in (
+      'alex.tunchez@canvas.build'
+      -- , 'amanda@example.com'
+    )
+  )
+  with check (id = 1);
