@@ -11,10 +11,17 @@
   <link rel="stylesheet" href="fun.css?v=1" />
 </head>
 <!--
-  For the TV, not for guests. Open it on a laptop, cast it, press F for
-  fullscreen. It refreshes itself, so leave it running.
+  Guests reach this from the tab bar. Shows standings and which questions are
+  tripping people up — never the answers themselves, so it's safe to leave
+  open while the quiz is still sealed.
 -->
 <body class="board">
+
+  <nav class="tabs tabs--dark">
+    <a href="quiz.html">The Quiz</a>
+    <a href="camera.html">Disposable Cam</a>
+    <a href="board.html" aria-current="page">Leaderboard</a>
+  </nav>
 
   <header class="board__head">
     <h1>How well do you know us?</h1>
@@ -27,6 +34,7 @@
       <ol class="board__list" id="list">
         <li class="board__empty">Waiting for the first score…</li>
       </ol>
+      <p class="board__you" id="you" hidden></p>
     </section>
 
     <section class="board__col">

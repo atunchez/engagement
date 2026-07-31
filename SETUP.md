@@ -76,7 +76,7 @@ nobody can play early. Two pages:
 | --- | --- |
 | `quiz.html` | "How well do you know us?" — multiple choice plus drag-free timeline sorting, a score, and a leaderboard |
 | `camera.html` | Guests take a photo, it gets developed to look like a disposable camera print, and it's sent to your private album |
-| `board.html` | For the TV, not for guests. Live leaderboard plus which questions people are getting wrong. Open it on a laptop, cast it, press **F** for fullscreen, leave it running. |
+| `board.html` | Leaderboard plus which questions people are getting wrong. Linked from the tab bar, so guests can check standings on their own phones. Never shows answers — only how many got each one right — so it's safe while the quiz is sealed. Works on a big screen too if there is one: press **F** for fullscreen. |
 
 ### Before the party — fill in the questions
 

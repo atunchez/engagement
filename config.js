@@ -30,8 +30,14 @@ const PHOTO_BUCKET = "party-photos";
 // How often the quiz checks whether you've released the answers (ms).
 const RELEASE_POLL_MS = 20000;
 
-// How often the TV leaderboard refreshes (ms).
-const BOARD_POLL_MS = 8000;
+// How often the leaderboard refreshes (ms). Guests view this on their own
+// phones, so it's deliberately unhurried — and polling stops entirely while
+// the page is in a background tab.
+const BOARD_POLL_MS = 15000;
+
+// Where a guest's own result is kept, so the leaderboard can highlight their
+// row. Shared by quiz.js and board.js.
+const QUIZ_STORAGE_KEY = "engagement-quiz-result-v1";
 
 // Date burned into the corner of disposable-camera photos: month day year,
 // the party date. Set to "" to stamp whatever date the photo is taken.

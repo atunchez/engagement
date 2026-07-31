@@ -45,6 +45,15 @@
 }
 .tabs .tabs__home { font-size: 0.72rem; }
 
+/* On the leaderboard, which sits on a dark background. */
+.tabs--dark {
+  background: rgba(23, 17, 13, 0.92);
+  border-bottom-color: #33251c;
+}
+.tabs--dark a { color: #a08a76; }
+.tabs--dark a:hover { color: #f3ddc4; background: #241a14; }
+.tabs--dark a[aria-current="page"] { background: var(--accent); color: #17110d; }
+
 .btn--ghost {
   background: transparent;
   color: var(--accent-deep);
@@ -376,9 +385,15 @@
   flex-direction: column;
   background: #17110d;
   color: #f6ece1;
-  padding: 3vh 4vw;
 }
-.board__head { text-align: center; margin-bottom: 3vh; }
+.board > :not(.tabs) { padding-left: 4vw; padding-right: 4vw; }
+.board__head { text-align: center; margin: 3vh 0; }
+.board__you {
+  margin-top: 1.4rem;
+  font-size: 0.95rem;
+  color: #c9a882;
+  font-style: italic;
+}
 .board__head h1 {
   font-family: "Cormorant Garamond", serif;
   font-size: clamp(2rem, 4.6vw, 4rem);
@@ -434,6 +449,21 @@
 }
 .board__row.is-first .board__name,
 .board__row.is-first .board__score { color: #ffd9a8; font-weight: 500; }
+
+/* the viewer's own row */
+.board__row.is-you {
+  background: #241a14;
+  border-radius: 6px;
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.board__row.is-you .board__name { color: #f3ddc4; font-weight: 500; }
+.board__row.is-you .board__name::after {
+  content: " (you)";
+  color: #a08a76;
+  font-size: 0.7em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
 
 .board__stat { margin-bottom: 2.2vh; }
 .board__stat-q {

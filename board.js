@@ -1,24 +1,56 @@
 // ===================================================================
-//  TV LEADERBOARD
-//  Open board.html on a laptop, cast it to the TV, press F for fullscreen.
-//  It refreshes itself every BOARD_POLL_MS and never needs touching.
+//  LEADERBOARD
+//  Guests reach this from the tab bar on their own phones. It also works on
+//  a big screen if there is one — press F for fullscreen.
+//
+//  Refreshes every BOARD_POLL_MS, and stops entirely while the page is in a
+//  background tab, so a phone left open all afternoon isn't polling for hours.
 // ===================================================================
 
 const bEl = {
   played: document.getElementById("played"),
   list: document.getElementById("list"),
+  you: document.getElementById("you"),
   stats: document.getElementById("stats"),
   status: document.getElementById("status"),
   release: document.getElementById("release"),
 };
 
-const BOARD_ROWS = 8;
+const BOARD_ROWS = 10;
+
+// Who's looking, so their own row can be marked. Written by quiz.js when they
+// post a score; absent if they haven't played on this phone.
+function me() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(QUIZ_STORAGE_KEY) || "null");
+    return saved && saved.name ? saved : null;
+  } catch (err) {
+    return null;
+  }
+}
+
+let boardTimer = null;
+
+function startBoard() {
+  if (boardTimer) return;
+  refresh();
+  boardTimer = setInterval(refresh, BOARD_POLL_MS);
+}
+
+function stopBoard() {
+  clearInterval(boardTimer);
+  boardTimer = null;
+}
 
 if (!isConfigured()) {
   bEl.status.textContent = "config.js isn't filled in yet";
 } else {
-  refresh();
-  setInterval(refresh, BOARD_POLL_MS);
+  startBoard();
+  // No point polling a page nobody's looking at.
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopBoard();
+    else startBoard();
+  });
 }
 
 async function refresh() {
@@ -56,9 +88,19 @@ function renderList(rows) {
 
   bEl.list.innerHTML = "";
 
+  const you = me();
+  let marked = false;
+
   rows.forEach((row, i) => {
     const li = document.createElement("li");
     li.className = "board__row" + (i === 0 ? " is-first" : "");
+
+    // Mark the viewer's own row — first match on name and score, so two
+    // guests sharing a first name don't both light up.
+    if (!marked && you && row.name === you.name && Number(row.score) === Number(you.score)) {
+      li.classList.add("is-you");
+      marked = true;
+    }
 
     const rank = document.createElement("span");
     rank.className = "board__rank";
@@ -75,6 +117,15 @@ function renderList(rows) {
     li.append(rank, name, score);
     bEl.list.appendChild(li);
   });
+
+  // If they played but didn't make the cut, still show them where they are.
+  if (you && !marked) {
+    bEl.you.textContent =
+      "You scored " + you.score + " — not in the top " + BOARD_ROWS + " yet.";
+    bEl.you.hidden = false;
+  } else {
+    bEl.you.hidden = true;
+  }
 }
 
 // Which questions tripped people up. Showing the hit rate gives nothing

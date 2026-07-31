@@ -12,7 +12,6 @@
 
 const POINTS_PER_Q = 10;
 const TOTAL_POINTS = POINTS_PER_Q * QUESTIONS.length;
-const STORAGE_KEY = "engagement-quiz-result-v1";
 
 const screens = {
   start: document.getElementById("screen-start"),
@@ -54,6 +53,7 @@ let displayOrder = [];   // for "order" questions: item indices as shown
 let detail = [];         // full per-question record, kept in this browser only
 let answersReleased = false;
 let releaseTimer = null;
+let myName = "";         // whatever they posted under, for highlighting
 
 el.title.textContent = QUIZ_TITLE;
 el.intro.textContent = QUIZ_INTRO;
@@ -407,8 +407,14 @@ function reviewLine(label, value) {
 function save() {
   try {
     localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ score: score, total: TOTAL_POINTS, detail: detail })
+      QUIZ_STORAGE_KEY,
+      JSON.stringify({
+        score: score,
+        total: TOTAL_POINTS,
+        detail: detail,
+        // Set once they post, so the leaderboard can highlight their row.
+        name: myName,
+      })
     );
   } catch (err) {
     /* private browsing — the quiz still works, they just can't come back */
@@ -417,7 +423,7 @@ function save() {
 
 function loadSaved() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(QUIZ_STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     return parsed && parsed.total === TOTAL_POINTS ? parsed : null;
@@ -457,6 +463,8 @@ el.scoreForm.addEventListener("submit", async (e) => {
       answers: detail.map((d) => ({ q: d.q, right: d.right })),
     });
 
+    myName = name;
+    save(); // remember the name too, so board.html can pick them out
     nameField.disabled = true;
     el.scoreStatus.textContent = "Posted. Go find us and argue about question 7.";
     loadLeaderboard(name);
