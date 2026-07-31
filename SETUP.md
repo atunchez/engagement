@@ -137,6 +137,16 @@ wrong with your stories attached.
 **To release, from your phone:** Supabase dashboard → **Table Editor** →
 `settings` → the single row → set **`answers_released`** to **true** → save.
 
+> **Don't delete that row.** It's the switch. If it goes missing, the quiz
+> stays sealed forever — safe, but you lose the ability to release. To get it
+> back, run this in the SQL Editor (or just re-run all of `schema.sql`):
+>
+> ```sql
+> insert into settings (id, answers_released)
+>   values (1, false)
+>   on conflict (id) do nothing;
+> ```
+
 Open quiz pages pick it up within about 20 seconds. Anyone who plays after that
 sees answers immediately, so it winds down gracefully.
 
