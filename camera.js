@@ -37,6 +37,9 @@ const els = {
   againBtn: document.getElementById("againBtn"),
   name: document.getElementById("camName"),
   status: document.getElementById("camStatus"),
+  collage: document.getElementById("collage"),
+  collageGrid: document.getElementById("collageGrid"),
+  collageEmpty: document.getElementById("collageEmpty"),
 };
 
 const ctx = els.canvas.getContext("2d", { willReadFrequently: true });
@@ -258,8 +261,17 @@ els.sendBtn.addEventListener("click", async () => {
 
   try {
     // The small developed version first — this is the one that must land.
-    const sent = await uploadPhoto(developedBlob, who, { kind: "film" });
+    const sent = await uploadPhoto(developedBlob, who, {
+      kind: "film",
+      bucket: PHOTO_BUCKET,
+    });
     setStatus("Sent — thank you! 💛 Take another if you like.");
+
+    // Put it on the wall. Non-fatal: the photo is already safely stored, so a
+    // failure here costs a tile, not the picture.
+    recordPhoto(sent.path, who)
+      .then(() => loadCollage())
+      .catch(() => {});
 
     // Then the original, in the background. Deliberately not awaited: it can
     // be 10MB+ and nobody should stand there watching a progress bar.
@@ -290,6 +302,8 @@ function sendOriginal(id, who) {
     kind: "original",
     ext: extensionFor(file),
     contentType: file.type || "application/octet-stream",
+    // Separate private bucket — originals are never shown on the wall.
+    bucket: ORIGINAL_BUCKET,
   }).catch(() => {
     /* nothing to do — the film version already made it */
   });
@@ -319,3 +333,78 @@ function setStatus(message, isError) {
   els.status.textContent = message;
   els.status.classList.toggle("error", !!isError);
 }
+
+// ===== THE WALL =====
+//
+// Shows the developed photos guests have sent, newest first — but only while
+// collage_visible is true in Supabase. Off by default, so the wall is empty
+// and hidden until the day.
+
+let collageTimer = null;
+
+async function loadCollage() {
+  if (!isConfigured()) return;
+
+  try {
+    if (!(await getCollageVisible())) {
+      els.collage.hidden = true;
+      return;
+    }
+
+    const rows = await getPhotos(COLLAGE_LIMIT);
+    if (!rows.length) {
+      // Visible but empty: say so, rather than showing a blank gap.
+      els.collageGrid.innerHTML = "";
+      els.collageEmpty.hidden = false;
+      els.collage.hidden = false;
+      return;
+    }
+
+    els.collageEmpty.hidden = true;
+    els.collageGrid.innerHTML = "";
+
+    rows.forEach((row) => {
+      const tile = document.createElement("figure");
+      tile.className = "wall__tile";
+
+      const img = document.createElement("img");
+      img.src = photoUrl(row.path);
+      img.alt = row.name ? "Photo by " + row.name : "Party photo";
+      img.loading = "lazy";
+      img.decoding = "async";
+      // A tile whose image 404s would otherwise sit there as a broken icon.
+      img.addEventListener("error", () => tile.remove());
+
+      tile.appendChild(img);
+
+      if (row.name) {
+        const cap = document.createElement("figcaption");
+        cap.textContent = row.name;
+        tile.appendChild(cap);
+      }
+
+      els.collageGrid.appendChild(tile);
+    });
+
+    els.collage.hidden = false;
+  } catch (err) {
+    // The wall is decoration; if it won't load, the camera still works.
+  }
+}
+
+function startCollage() {
+  if (collageTimer) return;
+  loadCollage();
+  collageTimer = setInterval(loadCollage, COLLAGE_POLL_MS);
+}
+
+function stopCollage() {
+  clearInterval(collageTimer);
+  collageTimer = null;
+}
+
+startCollage();
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) stopCollage();
+  else startCollage();
+});

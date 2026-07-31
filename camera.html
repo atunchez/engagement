@@ -13,10 +13,10 @@
 <body class="page">
 
   <nav class="tabs">
-    <a href="quiz.html">The Quiz</a>
-    <a href="camera.html" aria-current="page">Disposable Cam</a>
-    <a href="board.html">Leaderboard</a>
-    <a class="tabs__home" href="index.html">Home</a>
+    <a href="quiz.html"><span class="tabs__full">The Quiz</span><span class="tabs__short">Quiz</span></a>
+    <a href="camera.html" aria-current="page"><span class="tabs__full">Disposable Cam</span><span class="tabs__short">Camera</span></a>
+    <a href="board.html"><span class="tabs__full">Leaderboard</span><span class="tabs__short">Board</span></a>
+    <a class="tabs__home" href="index.html"><span class="tabs__full">Home</span><span class="tabs__short">Home</span></a>
   </nav>
 
   <main class="cam">
@@ -57,11 +57,19 @@
     </div>
 
     <p class="cam__note">
-      Photos go straight to a private album only the two of us can see —
-      nothing is posted publicly, and nobody else can browse them. We keep
-      both the film version and your unedited original, so the good ones
-      survive at full quality.
+      The film version you send joins the wall below for everyone at the party
+      to see. Your unedited original goes somewhere private that only the two
+      of us can open, so the good ones survive at full quality.
     </p>
+
+    <!-- ===== THE WALL ===== -->
+    <section class="wall" id="collage" hidden>
+      <h2 class="section-title">The Wall</h2>
+      <p class="wall__empty" id="collageEmpty" hidden>
+        Nothing here yet — be the first.
+      </p>
+      <div class="wall__grid" id="collageGrid"></div>
+    </section>
   </main>
 
   <footer class="footer">

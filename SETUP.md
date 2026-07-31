@@ -163,14 +163,26 @@ Every photo is stored **twice**, so nothing is lost to the filter:
 | `<id>-film.jpg` | The developed version, ~400KB. Uploads first. |
 | `<id>-original.heic` (or `.jpg`) | Exactly what came off their phone, unmodified. Uploaded in the background afterwards, so nobody waits on a 10MB file over brewery wifi. |
 
-They share an `id`, so the pair always matches up.
+They share an `id`, so the pair always matches up — but they live in **two
+different buckets**, which is the important part:
+
+| Bucket | Holds | Visibility |
+| --- | --- | --- |
+| `party-photos` | the developed `-film.jpg` versions | **public** — required, because the wall displays them |
+| `party-originals` | the untouched `-original.*` files | **private** — never displayed, never linked |
+
+They're split deliberately. If both copies sat in one public bucket, anyone who
+saw `abc-film.jpg` could ask for `abc-original.heic` and get the full-resolution
+file. Separating them means going public only ever exposes the small,
+grainy, date-stamped version.
+
+Guests also **cannot list** either bucket. The wall works off a `photos` table
+that only ever holds paths to developed versions.
 
 1. The guest picks or shoots a photo.
 2. `camera.js` shrinks a copy to 1600px, applies the film look, stamps the date.
-3. Both versions upload to the **`party-photos`** bucket.
-4. You view them at **Storage → party-photos** in the dashboard. The bucket is
-   **private** — guests can add photos but cannot browse anyone else's, and
-   there are no public links.
+3. The developed copy goes to `party-photos` and a row goes in `photos`.
+4. The original goes to `party-originals` in the background.
 5. "Save to my phone" is a plain local download and touches no server.
 
 If the original fails to upload, or is over the 20MB cap in `camera.js`, the
@@ -182,8 +194,23 @@ is safely stored.
 > tier's storage limit on your project's usage page early. If it's tight,
 > lower `maxOriginalMB` in `camera.js` or set `keepOriginal: false`.
 
-> Want a live photo slideshow on the TV? That needs a public bucket — a small
-> change to `schema.sql` plus a gallery page. Ask and I'll build it.
+### The Wall — your second switch
+
+Under the upload box on `camera.html`, guests see a collage of the developed
+photos everyone has sent, newest first. It's **off by default**.
+
+**To put it up:** Table Editor → `settings` → set **`collage_visible`** to
+**true**. **To take it down:** set it back to `false`.
+
+> **Turning the wall off hides it; it does not revoke access.** Anyone who
+> already copied a photo's URL can still open it, because `party-photos` is a
+> public bucket. To *actually* cut off access after the party: **Storage →
+> party-photos → bucket settings → turn off Public.** The originals were never
+> public, so they need nothing.
+
+Because the collage only reads the `photos` table, deleting a row removes a
+photo from the wall without deleting the file — handy if something unflattering
+goes up.
 
 ### Previewing before it's live
 

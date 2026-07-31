@@ -108,12 +108,13 @@ function newPhotoId() {
 //   <name>/<id>-film.jpg
 //   <name>/<id>-original.heic
 //
-// opts: { id, kind: "film" | "original", ext, contentType }
+// opts: { id, kind: "film" | "original", ext, contentType, bucket }
 async function uploadPhoto(body, who, opts) {
   const options = opts || {};
   const id = options.id || newPhotoId();
   const kind = options.kind || "film";
   const ext = (options.ext || "jpg").replace(/[^a-z0-9]/gi, "").toLowerCase();
+  const bucket = options.bucket || PHOTO_BUCKET;
 
   const safeWho =
     String(who || "").replace(/[^\w-]/g, "").slice(0, 24).toLowerCase() || "guest";
@@ -121,7 +122,7 @@ async function uploadPhoto(body, who, opts) {
   const path = safeWho + "/" + id + "-" + kind + "." + ext;
 
   const res = await fetch(
-    SUPABASE_URL + "/storage/v1/object/" + PHOTO_BUCKET + "/" + path,
+    SUPABASE_URL + "/storage/v1/object/" + bucket + "/" + path,
     {
       method: "POST",
       headers: restHeaders({
@@ -132,4 +133,45 @@ async function uploadPhoto(body, who, opts) {
   );
   await failIfBad(res, "Sending your photo");
   return { id: id, path: path };
+}
+
+// ===== THE COLLAGE =================================================
+
+// Guests can't list the bucket, so every developed photo gets a row here for
+// the collage to read.
+async function recordPhoto(path, who) {
+  const res = await fetch(SUPABASE_URL + "/rest/v1/photos", {
+    method: "POST",
+    headers: restHeaders({
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+    }),
+    body: JSON.stringify({ path: path, name: who || null }),
+  });
+  await failIfBad(res, "Adding your photo to the wall");
+}
+
+async function getPhotos(limit) {
+  const res = await fetch(
+    SUPABASE_URL + "/rest/v1/photos?select=path,name,created_at" +
+      "&order=created_at.desc&limit=" + (limit || 60),
+    { headers: restHeaders() }
+  );
+  await failIfBad(res, "Loading the photo wall");
+  return res.json();
+}
+
+// Only works because party-photos is a public bucket.
+function photoUrl(path) {
+  return SUPABASE_URL + "/storage/v1/object/public/" + PHOTO_BUCKET + "/" + path;
+}
+
+async function getCollageVisible() {
+  const res = await fetch(
+    SUPABASE_URL + "/rest/v1/settings?select=collage_visible&id=eq.1",
+    { headers: restHeaders() }
+  );
+  await failIfBad(res, "Checking the collage switch");
+  const rows = await res.json();
+  return rows.length ? rows[0].collage_visible === true : false;
 }

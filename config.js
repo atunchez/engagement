@@ -24,8 +24,17 @@ const SUPABASE_ANON_KEY = "sb_publishable_zdzKqU2-bGHMBG04kfS2jQ_2_1bVa3p";
 
 // ===================================================================
 
-// Storage bucket for guest photos.
+// Storage buckets for guest photos. The developed versions are public so the
+// collage can show them; the untouched originals live in a private bucket and
+// are never displayed. See the PHOTOS section of schema.sql.
 const PHOTO_BUCKET = "party-photos";
+const ORIGINAL_BUCKET = "party-originals";
+
+// How many photos the collage shows, newest first.
+const COLLAGE_LIMIT = 60;
+
+// How often the collage looks for new photos (ms). Stops on a hidden tab.
+const COLLAGE_POLL_MS = 20000;
 
 // How often the quiz checks whether you've released the answers (ms).
 const RELEASE_POLL_MS = 20000;

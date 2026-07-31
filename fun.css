@@ -45,6 +45,14 @@
 }
 .tabs .tabs__home { font-size: 0.72rem; }
 
+/* Four tabs don't fit across a narrow phone, so each one carries a long and a
+   short label and the CSS picks. */
+.tabs__short { display: none; }
+@media (max-width: 560px) {
+  .tabs__full { display: none; }
+  .tabs__short { display: inline; }
+}
+
 /* On the leaderboard, which sits on a dark background. */
 .tabs--dark {
   background: rgba(23, 17, 13, 0.92);
@@ -597,6 +605,52 @@
   font-size: 0.85rem;
   color: var(--muted);
   line-height: 1.7;
+}
+
+/* ===== THE WALL (guest photo collage) ===== */
+.wall {
+  margin-top: 3.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--line);
+}
+.wall .section-title { font-size: clamp(1.7rem, 6vw, 2.4rem); margin-bottom: 1.4rem; }
+.wall__empty { color: var(--muted); font-style: italic; }
+
+/* Masonry-ish: a simple column layout so portrait and landscape shots sit
+   together without being cropped or letterboxed. */
+.wall__grid {
+  columns: 2;
+  column-gap: 10px;
+}
+.wall__tile {
+  position: relative;
+  break-inside: avoid;
+  margin: 0 0 10px;
+  background: #14100d;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 8px 22px -12px rgba(58, 51, 46, 0.55);
+}
+.wall__tile img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.wall__tile figcaption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.4rem 0.6rem 0.45rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(transparent, rgba(20, 16, 13, 0.75));
+}
+
+@media (min-width: 700px) {
+  .wall__grid { columns: 3; }
 }
 
 @media (max-width: 520px) {

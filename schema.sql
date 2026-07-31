@@ -59,18 +59,60 @@ create policy "anyone can read settings"
   on settings for select to anon using (true);
 
 -- ===== PHOTOS ====================================================
+--
+-- Two buckets, on purpose:
+--
+--   party-photos     PUBLIC.  The developed, film-look versions. These are
+--                             what the collage on camera.html displays, so
+--                             they have to be readable without a secret key.
+--   party-originals  PRIVATE. The untouched full-resolution originals off
+--                             people's phones. Never displayed, never public.
+--
+-- They're separate because the two copies of a photo share an id. If they
+-- lived in one public bucket, anyone who saw <id>-film.jpg could just ask for
+-- <id>-original.heic and get the full-res file.
 
--- A private bucket: guests can add photos but cannot list or view anyone
--- else's. You see them in the dashboard under Storage → party-photos.
 insert into storage.buckets (id, name, public)
-  values ('party-photos', 'party-photos', false)
-  on conflict (id) do nothing;
+  values ('party-photos', 'party-photos', true)
+  on conflict (id) do update set public = true;
+
+insert into storage.buckets (id, name, public)
+  values ('party-originals', 'party-originals', false)
+  on conflict (id) do update set public = false;
 
 drop policy if exists "anyone can upload a party photo" on storage.objects;
 create policy "anyone can upload a party photo"
   on storage.objects for insert to anon
-  with check (bucket_id = 'party-photos');
+  with check (bucket_id in ('party-photos', 'party-originals'));
 
--- Note: no select policy for anon, on purpose — the photos are yours.
--- If you'd rather show a live photo slideshow on the TV, say so and this
--- becomes a public bucket plus a read policy.
+-- No select policy on storage.objects, even for the public bucket: guests
+-- can't LIST what's in there. The collage works off the photos table below,
+-- which only ever holds paths to developed versions.
+
+-- ===== THE COLLAGE ===============================================
+
+-- One row per developed photo, so the collage has something to read without
+-- needing permission to list the bucket.
+create table if not exists photos (
+  id          bigint generated always as identity primary key,
+  created_at  timestamptz not null default now(),
+  path        text not null,
+  name        text
+);
+
+create index if not exists photos_recent_idx on photos (created_at desc);
+
+alter table photos enable row level security;
+
+drop policy if exists "anyone can add a photo row" on photos;
+create policy "anyone can add a photo row"
+  on photos for insert to anon with check (true);
+
+drop policy if exists "anyone can read photo rows" on photos;
+create policy "anyone can read photo rows"
+  on photos for select to anon using (true);
+
+-- Your switch for the collage, same idea as answers_released: flip it on for
+-- the party, off afterwards.
+alter table settings
+  add column if not exists collage_visible boolean not null default false;
