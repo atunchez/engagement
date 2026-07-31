@@ -208,9 +208,36 @@ photos everyone has sent, newest first. It's **off by default**.
 > party-photos → bucket settings → turn off Public.** The originals were never
 > public, so they need nothing.
 
-Because the collage only reads the `photos` table, deleting a row removes a
-photo from the wall without deleting the file — handy if something unflattering
-goes up.
+### Taking a photo down, mid-party
+
+Someone will eventually send something they regret. Three options, fastest
+first:
+
+**Everything, right now.** `settings` → `collage_visible` → `false`. The whole
+wall disappears within 20 seconds. Use this if you need a moment to sort out
+which photo is the problem.
+
+**One photo, keeping the file.** Table Editor → **`photos`** → sort by
+`created_at` descending → delete the row. It leaves the wall immediately but
+the image stays in Storage, so you still have it.
+
+**One photo, deleting it outright.** Storage → **party-photos** → find it →
+delete the file. Do it this way when you're not sure which row is which:
+**Storage shows thumbnails and the table doesn't.** The wall drops any tile
+whose image won't load, so it disappears on the next refresh even with its row
+still in the table.
+
+The path tells you who sent it — files are stored under the name they typed,
+like `priya/abc123-film.jpg` — so you can usually find the right row by name
+and timestamp.
+
+> **Deleting the film version doesn't delete the original.** Those live in
+> `party-originals` under the same id. If someone asks you to *really* get rid
+> of a photo, delete it from both buckets.
+
+> **Guests can't delete their own photos** — there's no delete policy, so the
+> website can't remove anything. They have to ask you. Worth knowing if someone
+> comes up mid-party asking for one to come down.
 
 ### Previewing before it's live
 

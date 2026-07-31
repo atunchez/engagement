@@ -372,8 +372,14 @@ async function loadCollage() {
       img.alt = row.name ? "Photo by " + row.name : "Party photo";
       img.loading = "lazy";
       img.decoding = "async";
-      // A tile whose image 404s would otherwise sit there as a broken icon.
-      img.addEventListener("error", () => tile.remove());
+      // A deleted file would otherwise sit here as a broken icon. Dropping the
+      // tile means deleting a photo in Storage takes it off the wall, even
+      // though its row is still in the table.
+      img.addEventListener("error", () => {
+        tile.remove();
+        // If that was the last one, say so rather than leaving a bare heading.
+        if (!els.collageGrid.children.length) els.collageEmpty.hidden = false;
+      });
 
       tile.appendChild(img);
 
