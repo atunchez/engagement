@@ -33,10 +33,9 @@ const RELEASE_POLL_MS = 20000;
 // How often the TV leaderboard refreshes (ms).
 const BOARD_POLL_MS = 8000;
 
-// Date burned into the corner of disposable-camera photos, in the order a
-// real point-and-shoot prints it. Set to "" to stamp the actual date the
-// photo is taken instead.
-const STAMP_DATE = "'26  8 29";
+// Date burned into the corner of disposable-camera photos: month day year,
+// the party date. Set to "" to stamp whatever date the photo is taken.
+const STAMP_DATE = "8 29 '26";
 
 // ===================================================================
 

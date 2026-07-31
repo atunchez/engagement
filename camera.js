@@ -228,12 +228,11 @@ function dateStamp(w, h) {
   ctx.restore();
 }
 
+// Month day year, matching the format of STAMP_DATE in config.js.
 function autoDate() {
   const now = new Date();
   const yy = String(now.getFullYear()).slice(2);
-  const m = String(now.getMonth() + 1).padStart(2, " ");
-  const d = String(now.getDate()).padStart(2, "0");
-  return `'${yy} ${m} ${d}`;
+  return `${now.getMonth() + 1} ${now.getDate()} '${yy}`;
 }
 
 // ===== SENDING =====
