@@ -10,13 +10,17 @@
 //  See "The party pages" in SETUP.md.
 // ===================================================================
 
-const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE"; // https://xxxx.supabase.co
-const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
+const SUPABASE_URL = "https://qibonxsmiybrmbbotbwd.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_zdzKqU2-bGHMBG04kfS2jQ_2_1bVa3p";
 
-// The "anon" key is meant to be public — it's safe in this file and in the
-// repo. What it's allowed to do is fixed by the row-level security policies
-// in schema.sql: post a score, read the leaderboard, upload a photo. Nothing
-// else. Never put the service_role key here; that one bypasses every policy.
+// The publishable key is meant to be public — it's safe in this file and in
+// the repo. What it's allowed to do is fixed by the row-level security
+// policies in schema.sql: post a score, read the leaderboard, upload a photo.
+// Nothing else — verified: it cannot edit or delete a score, cannot flip the
+// answer switch, and cannot read back any photo.
+//
+// Never put a "secret" key here (the old name was service_role); those
+// bypass every policy.
 
 // ===================================================================
 
@@ -39,8 +43,8 @@ const STAMP_DATE = "'26  8 29";
 // True once both values above have been filled in.
 function isConfigured() {
   return (
-    SUPABASE_URL.indexOf("PASTE") !== 0 &&
-    SUPABASE_ANON_KEY.indexOf("PASTE") !== 0 &&
+    SUPABASE_URL.indexOf("PASTE") === -1 &&
+    SUPABASE_ANON_KEY.indexOf("PASTE") === -1 &&
     SUPABASE_URL.indexOf("supabase.co") !== -1
   );
 }
