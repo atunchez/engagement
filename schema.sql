@@ -134,7 +134,7 @@ create policy "only the couple can flip the switches"
   on settings for update to authenticated
   using (
     (auth.jwt() ->> 'email') in (
-      'alex.tunchez@canvas.build'
+      'al.tunchez@gmail.com'
       -- , 'amanda@example.com'
     )
   )
