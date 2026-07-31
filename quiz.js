@@ -75,9 +75,14 @@ async function boot() {
 
 // Withheld by default: if the switch can't be read, don't leak answers.
 async function resolveRelease() {
-  const override = new URLSearchParams(location.search).get("reveal");
-  if (override === "1") return true;
-  if (override === "0") return false;
+  // ?reveal=1 / ?reveal=0 previews either state without touching the
+  // database — but ONLY when running locally. On the real site a guest could
+  // otherwise unseal the answers just by editing the address bar.
+  if (isLocalPreview()) {
+    const override = new URLSearchParams(location.search).get("reveal");
+    if (override === "1") return true;
+    if (override === "0") return false;
+  }
 
   // Local preview before Supabase is set up — show everything.
   if (!isConfigured()) return true;

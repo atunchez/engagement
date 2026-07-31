@@ -40,6 +40,22 @@ const STAMP_DATE = "'26  8 29";
 
 // ===================================================================
 
+// True when the page is being previewed off a local machine rather than the
+// real site. Used to gate preview-only shortcuts so guests can't reach them.
+// Covers localhost and the 192.168.x.x / 10.x.x.x addresses you'd use to open
+// the site on your phone over home wifi.
+function isLocalPreview() {
+  const h = location.hostname;
+  return (
+    h === "localhost" ||
+    h === "127.0.0.1" ||
+    h === "" ||
+    /^192\.168\./.test(h) ||
+    /^10\./.test(h) ||
+    /^172\.(1[6-9]|2\d|3[01])\./.test(h)
+  );
+}
+
 // True once both values above have been filled in.
 function isConfigured() {
   return (
