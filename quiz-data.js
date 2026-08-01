@@ -78,8 +78,8 @@ const QUESTIONS = [
     options: [
       "“Let's share secrets”",
       "“I'm 6 ft with heels on”",
-      "TODO — a third bio line",
-      "TODO — a fourth bio line",
+      "“I peaked at trivia night”",
+      "“I have a big heart”",
     ],
     correct: 0,
     note: "Four words — “let's share secrets” — and Amanda decided that was worth a reply.",
