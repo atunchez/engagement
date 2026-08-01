@@ -249,13 +249,23 @@
      shorter photo gets a slab of empty tile under it. */
   align-items: start;
 }
-.shots__shot {
-  margin: 0;
+.shots__shot { margin: 0; }
+.shots__shot img {
+  display: block;
+  width: 100%;
+  height: auto;
   border-radius: 4px;
-  overflow: hidden;
   box-shadow: 0 10px 26px -14px rgba(58, 51, 46, 0.6);
 }
-.shots__shot img { display: block; width: 100%; height: auto; }
+/* A caption for one photo, as opposed to .shots__caption for the whole pair. */
+.shots__cap {
+  margin-top: 0.45rem;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: var(--muted);
+  font-style: italic;
+  text-align: center;
+}
 .shots__caption {
   grid-column: 1 / -1;
   margin-top: 0.6rem;

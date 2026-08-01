@@ -272,7 +272,11 @@ function photoStrip(paths, caption) {
   const wrap = document.createElement("div");
   wrap.className = "shots" + (paths.length > 1 ? " shots--pair" : "");
 
-  paths.forEach((src) => {
+  paths.forEach((entry) => {
+    // An entry is either a plain path, or {src, caption} to caption just it.
+    const src = typeof entry === "string" ? entry : entry.src;
+    const own = typeof entry === "string" ? "" : entry.caption;
+
     const fig = document.createElement("figure");
     fig.className = "shots__shot";
 
@@ -284,6 +288,14 @@ function photoStrip(paths, caption) {
     img.addEventListener("error", () => fig.remove());
 
     fig.appendChild(img);
+
+    if (own) {
+      const cap = document.createElement("figcaption");
+      cap.className = "shots__cap";
+      cap.textContent = own;
+      fig.appendChild(cap);
+    }
+
     wrap.appendChild(fig);
   });
 

@@ -27,8 +27,14 @@
 //    answerPhotos / answerCaption — shown with the ANSWER, so they stay hidden
 //                                   until you release the answers.
 //
-//  Each takes one or two paths. Drop files in photos/ and keep them under
-//  ~300KB so they load fast on brewery wifi — ask and I'll resize anything.
+//  Each takes one or two entries. An entry is either a plain path:
+//      askPhotos: ["photos/a.jpg", "photos/b.jpg"]
+//  or an object, to caption that one photo on its own:
+//      answerPhotos: [{ src: "photos/a.jpg", caption: "A stop in Chicago." }]
+//  askCaption / answerCaption caption the pair as a whole instead.
+//
+//  Drop files in photos/ and keep them under ~300KB so they load fast on
+//  brewery wifi — ask and I'll resize anything.
 // ===================================================================
 
 const QUIZ_TITLE = "How well do you know us?";
@@ -97,11 +103,15 @@ const QUESTIONS = [
     // Held back until the answers are released: the photos give away which
     // milestone came where.
     answerPhotos: [
-      "photos/timeline/timeline-drive.jpg",
-      "photos/timeline/timeline-apartment.jpg",
+      {
+        src: "photos/timeline/timeline-drive.jpg",
+        caption: "A stop outside Chicago.",
+      },
+      {
+        src: "photos/timeline/timeline-apartment.jpg",
+        caption: "Moving in is hard — taking a break with a much-needed Claw.",
+      },
     ],
-    answerCaption:
-      "Halfway across the country, and the first apartment — mostly boxes.",
   },
   {
     type: "choice",
