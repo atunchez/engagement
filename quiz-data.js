@@ -62,15 +62,15 @@ const QUESTIONS = [
   },
   {
     type: "choice",
-    question: "Who said “I love you” first?", // TODO
+    question: "Who said “I love you” first?",
     options: [
       "Alex",
       "Amanda",
       "We said it at the same time",
-      "Neither — it was over text",
+      "Neither — we still haven't said it",
     ],
-    correct: 0, // TODO
-    note: "TODO — the story.",
+    correct: 0,
+    note: "Amanda felt it first. Alex said it out loud so she wouldn't have to 😉",
   },
   {
     type: "choice",
