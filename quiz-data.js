@@ -93,9 +93,7 @@ const QUESTIONS = [
       "We move in together in South San Francisco",
       "The proposal",
     ],
-    note:
-      "New York to South San Francisco, in that order. " +
-      "TODO — how long did all of that take?",
+    note: "New York to San Francisco, in that order — about six years of it.",
   },
   {
     type: "choice",
