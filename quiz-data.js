@@ -18,11 +18,17 @@
 //  "note" is shown after they answer — that's where the story goes.
 //  It's optional; delete the line if you don't want one.
 //
-//  "images" is an optional list of one or two photo paths, shown with the
-//  answer. "caption" is an optional line underneath them. Both only appear
-//  once you've released the answers — a photo would otherwise give it away.
-//  Drop files in photos/ and keep them under ~300KB so they load fast on
-//  brewery wifi; ask and I'll resize anything.
+//  Photos come in two kinds, and the difference matters:
+//
+//    askPhotos / askCaption       — shown WITH the question, always. Only use
+//                                   these when the photo doesn't give the
+//                                   answer away, e.g. the question already
+//                                   says where you were.
+//    answerPhotos / answerCaption — shown with the ANSWER, so they stay hidden
+//                                   until you release the answers.
+//
+//  Each takes one or two paths. Drop files in photos/ and keep them under
+//  ~300KB so they load fast on brewery wifi — ask and I'll resize anything.
 // ===================================================================
 
 const QUIZ_TITLE = "How well do you know us?";
@@ -34,22 +40,22 @@ const QUIZ_INTRO =
 const QUESTIONS = [
   {
     type: "choice",
-    question: "What did we get after our first date?",
+    question: "Our first date started at a bar near NYU. What did we do after?",
     options: [
-      "Insomnia Cookies",
-      "Levain Bakery",
-      "Halal Guys",
-      "Big Gay Ice Cream",
+      "Got Insomnia Cookies",
+      "Split a slice at Joe's Pizza",
+      "Walked through Washington Square Park",
+      "Called it a night right there",
     ],
     correct: 0,
-    note:
-      "A bar near NYU first, then Insomnia Cookies. " +
-      "TODO — add a line about that night in your own words.",
-    images: [
+    // The photos are of the bar, and the question already says we were at a
+    // bar — so they can sit with the question and give nothing away.
+    askPhotos: [
       "photos/first_date/first-date-1.jpg",
       "photos/first_date/first-date-2.jpg",
     ],
-    caption: "Same bar, same booth — photographed on a much later visit.",
+    askCaption: "The bar in question — though these are from a much later visit.",
+    note: "TODO — a line about that night, in your own words.",
   },
   {
     type: "choice",

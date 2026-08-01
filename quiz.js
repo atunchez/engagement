@@ -27,6 +27,7 @@ const el = {
   progressFill: document.getElementById("progressFill"),
   progressText: document.getElementById("progressText"),
   question: document.getElementById("questionText"),
+  askPhotos: document.getElementById("askPhotos"),
   options: document.getElementById("options"),
   orderList: document.getElementById("orderList"),
   checkOrderBtn: document.getElementById("checkOrderBtn"),
@@ -120,6 +121,7 @@ function render() {
   el.progressFill.style.width = ((index + 1) / QUESTIONS.length) * 100 + "%";
   el.progressText.textContent = `Question ${index + 1} of ${QUESTIONS.length}`;
   el.question.textContent = q.question;
+  renderAskPhotos(q);
 
   el.feedback.hidden = true;
   el.options.innerHTML = "";
@@ -260,10 +262,11 @@ function realOrderLine(q) {
   return p;
 }
 
-// Photos belong to the reveal, like the story notes — showing them while the
-// quiz is sealed would give the answer away.
-function revealPhotos(q) {
-  const paths = q.images || [];
+// Builds a strip of one or two photos with an optional caption. Used for both
+// kinds: askPhotos sit with the question and are always visible; answerPhotos
+// belong to the reveal and stay hidden until the answers are released.
+function photoStrip(paths, caption) {
+  paths = paths || [];
   if (!paths.length) return null;
 
   const wrap = document.createElement("div");
@@ -284,14 +287,27 @@ function revealPhotos(q) {
     wrap.appendChild(fig);
   });
 
-  if (q.caption) {
+  if (caption) {
     const cap = document.createElement("figcaption");
     cap.className = "shots__caption";
-    cap.textContent = q.caption;
+    cap.textContent = caption;
     wrap.appendChild(cap);
   }
 
   return wrap;
+}
+
+// Shown with the question, sealed or not. Only put a photo here if it doesn't
+// hand over the answer.
+function renderAskPhotos(q) {
+  el.askPhotos.innerHTML = "";
+  el.askPhotos.hidden = true;
+
+  const strip = photoStrip(q.askPhotos, q.askCaption);
+  if (!strip) return;
+
+  el.askPhotos.appendChild(strip);
+  el.askPhotos.hidden = false;
 }
 
 function giveFeedback(right, verdict, q) {
@@ -304,7 +320,7 @@ function giveFeedback(right, verdict, q) {
     el.note.textContent = q.note || "";
     el.note.hidden = !q.note;
 
-    const photos = revealPhotos(q);
+    const photos = photoStrip(q.answerPhotos, q.answerCaption);
     if (photos) {
       el.feedbackPhotos.appendChild(photos);
       el.feedbackPhotos.hidden = false;
@@ -430,8 +446,11 @@ function renderReview() {
       item.appendChild(note);
     }
 
-    const photos = revealPhotos(q);
-    if (photos) item.appendChild(photos);
+    const asked = photoStrip(q.askPhotos, q.askCaption);
+    if (asked) item.appendChild(asked);
+
+    const answered = photoStrip(q.answerPhotos, q.answerCaption);
+    if (answered) item.appendChild(answered);
 
     el.review.appendChild(item);
   });
