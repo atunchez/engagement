@@ -17,6 +17,12 @@
 //
 //  "note" is shown after they answer — that's where the story goes.
 //  It's optional; delete the line if you don't want one.
+//
+//  "images" is an optional list of one or two photo paths, shown with the
+//  answer. "caption" is an optional line underneath them. Both only appear
+//  once you've released the answers — a photo would otherwise give it away.
+//  Drop files in photos/ and keep them under ~300KB so they load fast on
+//  brewery wifi; ask and I'll resize anything.
 // ===================================================================
 
 const QUIZ_TITLE = "How well do you know us?";
@@ -28,15 +34,22 @@ const QUIZ_INTRO =
 const QUESTIONS = [
   {
     type: "choice",
-    question: "Where did we go on our first date?", // TODO
+    question: "What did we get after our first date?",
     options: [
-      "TODO — the real place",
-      "TODO — a wrong but believable place",
-      "TODO — another wrong one",
-      "TODO — something a little funny",
+      "Insomnia Cookies",
+      "Levain Bakery",
+      "Halal Guys",
+      "Big Gay Ice Cream",
     ],
     correct: 0,
-    note: "TODO — what actually happened there.",
+    note:
+      "A bar near NYU first, then Insomnia Cookies. " +
+      "TODO — add a line about that night in your own words.",
+    images: [
+      "photos/first_date/first-date-1.jpg",
+      "photos/first_date/first-date-2.jpg",
+    ],
+    caption: "Same bar, same booth — photographed on a much later visit.",
   },
   {
     type: "choice",

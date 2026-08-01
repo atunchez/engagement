@@ -238,6 +238,38 @@
   margin: 0 auto 1.5rem;
 }
 
+/* photos shown with a revealed answer */
+.quiz__photos { margin: 0 0 1.6rem; }
+.shots { margin: 0; }
+.shots--pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.shots__shot {
+  margin: 0;
+  background: #14100d;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 10px 26px -14px rgba(58, 51, 46, 0.6);
+}
+.shots__shot img { display: block; width: 100%; height: auto; }
+.shots__caption {
+  grid-column: 1 / -1;
+  margin-top: 0.6rem;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--muted);
+  font-style: italic;
+  text-align: center;
+}
+.review__item .shots { margin-top: 0.9rem; }
+
+@media (max-width: 430px) {
+  /* Two photos side by side on a phone are too small to read faces in. */
+  .shots--pair { grid-template-columns: 1fr; gap: 10px; }
+}
+
 /* results */
 #screen-result { text-align: center; }
 .quiz__score {

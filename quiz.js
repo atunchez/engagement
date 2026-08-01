@@ -33,6 +33,7 @@ const el = {
   feedback: document.getElementById("feedback"),
   verdict: document.getElementById("verdict"),
   note: document.getElementById("note"),
+  feedbackPhotos: document.getElementById("feedbackPhotos"),
   nextBtn: document.getElementById("nextBtn"),
   scoreLine: document.getElementById("scoreLine"),
   tierLabel: document.getElementById("tierLabel"),
@@ -168,7 +169,7 @@ function answerChoice(q, chosen) {
     else btn.classList.add("is-dimmed");
   });
 
-  giveFeedback(right, right ? "Correct." : "Not quite.", q.note);
+  giveFeedback(right, right ? "Correct." : "Not quite.", q);
 }
 
 function renderOrderRows(q, locked) {
@@ -247,7 +248,7 @@ function checkOrder() {
   giveFeedback(
     perfect,
     perfect ? "Perfect order." : `${rightSpots} of ${q.items.length} in the right spot.`,
-    q.note
+    q
   );
 }
 
@@ -259,12 +260,55 @@ function realOrderLine(q) {
   return p;
 }
 
-function giveFeedback(right, verdict, note) {
+// Photos belong to the reveal, like the story notes — showing them while the
+// quiz is sealed would give the answer away.
+function revealPhotos(q) {
+  const paths = q.images || [];
+  if (!paths.length) return null;
+
+  const wrap = document.createElement("div");
+  wrap.className = "shots" + (paths.length > 1 ? " shots--pair" : "");
+
+  paths.forEach((src) => {
+    const fig = document.createElement("figure");
+    fig.className = "shots__shot";
+
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "";
+    img.loading = "lazy";
+    // A missing file shouldn't leave a broken icon in the middle of the story.
+    img.addEventListener("error", () => fig.remove());
+
+    fig.appendChild(img);
+    wrap.appendChild(fig);
+  });
+
+  if (q.caption) {
+    const cap = document.createElement("figcaption");
+    cap.className = "shots__caption";
+    cap.textContent = q.caption;
+    wrap.appendChild(cap);
+  }
+
+  return wrap;
+}
+
+function giveFeedback(right, verdict, q) {
+  el.feedbackPhotos.innerHTML = "";
+  el.feedbackPhotos.hidden = true;
+
   if (answersReleased) {
     el.verdict.textContent = verdict;
     el.verdict.className = "quiz__verdict " + (right ? "is-right" : "is-wrong");
-    el.note.textContent = note || "";
-    el.note.hidden = !note;
+    el.note.textContent = q.note || "";
+    el.note.hidden = !q.note;
+
+    const photos = revealPhotos(q);
+    if (photos) {
+      el.feedbackPhotos.appendChild(photos);
+      el.feedbackPhotos.hidden = false;
+    }
   } else {
     el.verdict.textContent = "Locked in.";
     el.verdict.className = "quiz__verdict is-locked";
@@ -385,6 +429,9 @@ function renderReview() {
       note.textContent = q.note;
       item.appendChild(note);
     }
+
+    const photos = revealPhotos(q);
+    if (photos) item.appendChild(photos);
 
     el.review.appendChild(item);
   });
