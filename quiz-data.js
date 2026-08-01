@@ -94,6 +94,14 @@ const QUESTIONS = [
       "The proposal",
     ],
     note: "New York to San Francisco, in that order — about six years of it.",
+    // Held back until the answers are released: the photos give away which
+    // milestone came where.
+    answerPhotos: [
+      "photos/timeline/timeline-drive.jpg",
+      "photos/timeline/timeline-apartment.jpg",
+    ],
+    answerCaption:
+      "Halfway across the country, and the first apartment — mostly boxes.",
   },
   {
     type: "choice",
