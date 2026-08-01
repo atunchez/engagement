@@ -74,12 +74,12 @@ const QUESTIONS = [
   },
   {
     type: "choice",
-    question: "What was in Alex's dating profile that hooked Amanda?",
+    question: "What hooked Amanda about Alex's dating profile?",
     options: [
-      "“Let's share secrets”",
+      "His “let's share secrets” prompt",
       "That he was in grad school",
       "A photo of him with someone else's dog",
-      "“I'm 6 ft with heels on”",
+      "His “6 ft with heels on” joke",
     ],
     correct: 0,
     note: "Four words — “let's share secrets” — and Amanda decided that was worth a reply.",
