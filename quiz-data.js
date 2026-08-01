@@ -74,12 +74,12 @@ const QUESTIONS = [
   },
   {
     type: "choice",
-    question: "Which part of Alex's profile hooked Amanda?",
+    question: "Which line from Alex's bio hooked Amanda?",
     options: [
       "“Let's share secrets”",
       "“I'm 6 ft with heels on”",
-      "The photo with someone else's dog",
-      "The part about grad school",
+      "TODO — a third bio line",
+      "TODO — a fourth bio line",
     ],
     correct: 0,
     note: "Four words — “let's share secrets” — and Amanda decided that was worth a reply.",
