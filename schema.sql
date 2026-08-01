@@ -54,9 +54,12 @@ alter table settings enable row level security;
 -- Everyone can READ the switch. Deliberately no update policy: the website
 -- cannot flip it, only you can, from the Supabase dashboard. That way there's
 -- no admin password living in public JavaScript.
+-- Note both roles: a signed-in user is `authenticated`, which does NOT inherit
+-- `anon`'s policies. Without authenticated here, admin.html can update the row
+-- but can't read it back, which looks exactly like a permission failure.
 drop policy if exists "anyone can read settings" on settings;
 create policy "anyone can read settings"
-  on settings for select to anon using (true);
+  on settings for select to anon, authenticated using (true);
 
 -- ===== PHOTOS ====================================================
 --
@@ -120,22 +123,22 @@ alter table settings
 -- ===== ADMIN ACCESS (for admin.html) =============================
 --
 -- Lets you flip both switches from admin.html after signing in, instead of
--- driving the dashboard on your phone. Guests still can't: the anon role has
--- no update policy, so this only applies to a signed-in account.
+-- driving the dashboard on your phone. Guests can't: the anon role has no
+-- update policy, so this only applies to a signed-in account.
 --
--- >>> EDIT THIS LIST if you sign in with a different address, or to give
--- >>> Amanda her own login. Emails must match the account exactly.
+-- The protection here is that **new signups are disabled** in Authentication →
+-- Sign In / Providers → Email, so yours is the only account that exists. Keep
+-- it that way.
 --
--- It's pinned to specific emails on purpose. Even if new signups are somehow
--- left enabled, a stranger who registers still can't touch anything.
+-- This used to be pinned to a specific email address. That's stricter, but it
+-- fails confusingly when the string doesn't exactly match the account, so it's
+-- not worth it for a two-person site. To pin it anyway, replace using (true)
+-- with:
+--     using ((auth.jwt() ->> 'email') in ('you@example.com'))
 
 drop policy if exists "only the couple can flip the switches" on settings;
-create policy "only the couple can flip the switches"
+drop policy if exists "signed-in users can flip the switches" on settings;
+create policy "signed-in users can flip the switches"
   on settings for update to authenticated
-  using (
-    (auth.jwt() ->> 'email') in (
-      'al.tunchez@gmail.com'
-      -- , 'amanda@example.com'
-    )
-  )
+  using (true)
   with check (id = 1);
