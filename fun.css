@@ -245,10 +245,12 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+  /* Without this, grid stretches both tiles to the taller one's height and the
+     shorter photo gets a slab of empty tile under it. */
+  align-items: start;
 }
 .shots__shot {
   margin: 0;
-  background: #14100d;
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 10px 26px -14px rgba(58, 51, 46, 0.6);
