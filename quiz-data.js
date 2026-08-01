@@ -58,9 +58,7 @@ const QUESTIONS = [
       "photos/first_date/first-date-2.jpg",
     ],
     askCaption: "The bar in question — though these are from a much later visit.",
-    note:
-      "Washington Square Park first, then the bar, then Insomnia Cookies. " +
-      "TODO — one line in your own words about that night.",
+    note: "Washington Square Park first, then the bar, then Insomnia Cookies.",
   },
   {
     type: "choice",
