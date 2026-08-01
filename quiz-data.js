@@ -88,13 +88,14 @@ const QUESTIONS = [
     type: "order",
     question: "Put our story in order — earliest first.",
     items: [
-      "The night we met", // TODO
-      "Our first date", // TODO
-      "The first trip we took together", // TODO
-      "Moving in together", // TODO
-      "The proposal", // TODO
+      "Our first date in New York",
+      "Amanda drives across the country to California",
+      "We move in together in South San Francisco",
+      "The proposal",
     ],
-    note: "TODO — a line about the stretch between the first and last of these.",
+    note:
+      "New York to South San Francisco, in that order. " +
+      "TODO — how long did all of that take?",
   },
   {
     type: "choice",
