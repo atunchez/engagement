@@ -74,15 +74,15 @@ const QUESTIONS = [
   },
   {
     type: "choice",
-    question: "How did we actually meet?", // TODO
+    question: "What was in Alex's dating profile that hooked Amanda?",
     options: [
-      "TODO — the truth",
-      "TODO — a dating app",
-      "TODO — through a mutual friend",
-      "TODO — at work",
+      "“Let's share secrets”",
+      "That he was in grad school",
+      "A photo of him with someone else's dog",
+      "“I'm 6 ft with heels on”",
     ],
     correct: 0,
-    note: "TODO",
+    note: "Four words — “let's share secrets” — and Amanda decided that was worth a reply.",
   },
   {
     type: "order",
