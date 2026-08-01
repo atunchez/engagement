@@ -40,12 +40,15 @@ const QUIZ_INTRO =
 const QUESTIONS = [
   {
     type: "choice",
-    question: "Our first date started at a bar near NYU. What did we do after?",
+    // "What did we get" rather than "what did we do" — they also walked through
+    // Washington Square Park that night, so a "what did we do" question has
+    // more than one true answer. All four options are food for the same reason.
+    question: "Our first date took us to a bar near NYU. What did we get after?",
     options: [
-      "Got Insomnia Cookies",
-      "Split a slice at Joe's Pizza",
-      "Walked through Washington Square Park",
-      "Called it a night right there",
+      "Insomnia Cookies",
+      "A slice at Joe's Pizza",
+      "Falafel from Mamoun's",
+      "Halal Guys",
     ],
     correct: 0,
     // The photos are of the bar, and the question already says we were at a
@@ -55,7 +58,9 @@ const QUESTIONS = [
       "photos/first_date/first-date-2.jpg",
     ],
     askCaption: "The bar in question — though these are from a much later visit.",
-    note: "TODO — a line about that night, in your own words.",
+    note:
+      "Washington Square Park first, then the bar, then Insomnia Cookies. " +
+      "TODO — one line in your own words about that night.",
   },
   {
     type: "choice",
