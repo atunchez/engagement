@@ -116,7 +116,7 @@ const QUESTIONS = [
   {
     type: "choice",
     // "Active" on purpose — there are retired Giants we like more.
-    question: "Who's our favorite active Giant?",
+    question: "Who's our favorite active San Francisco Giants player?",
     options: [
       "Jung Hoo Lee",
       "Logan Webb",
@@ -128,10 +128,34 @@ const QUESTIONS = [
   },
   {
     type: "choice",
-    question: "Where did the proposal happen?", // TODO
-    options: ["TODO", "TODO", "TODO", "TODO"],
+    question: "Where did the proposal happen?",
+    options: [
+      "Gantry Park, Queens NY",
+      // Not a throwaway: this was genuinely the runner-up.
+      "Brooklyn Bridge Park, Brooklyn NY",
+      "Golden Gate Park, San Francisco CA",
+      "The bar from our first date, Manhattan NY",
+    ],
     correct: 0,
-    note: "TODO",
+    note:
+      "Alex talked her into visiting the park a month ahead, claiming he'd seen " +
+      "it in an Instagram reel. Amanda was briefly suspicious — Alex doesn't " +
+      "plan things — and then forgot all about it. Edelyn and Sarah took her to " +
+      "get her nails done a few days before the trip, so she was ready for the " +
+      "ring photo without knowing why. She said no at first, purely out of " +
+      "disbelief and horror at doing this in public. Once the photographer left " +
+      "and the clapping strangers wandered off, she cried and called everyone " +
+      "she loves. Brooklyn Bridge Park was the runner-up — one of our early " +
+      "dates.",
+    answerPhotos: [
+      {
+        src: "photos/pretend_proposal/pretend-proposal.jpg",
+        caption:
+          "Alex fake-proposing in Prospect Park on 13 May 2021, almost five " +
+          "years to the day before the real one. Who said Alex is a bad " +
+          "planner? 😉",
+      },
+    ],
   },
   {
     type: "choice",
