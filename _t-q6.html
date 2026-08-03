@@ -1,0 +1,18 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;background:#000}iframe{border:0;display:block;width:430px;height:2600px}</style></head>
+<body><iframe id="f" src="quiz.html?reveal=1"></iframe>
+<script>
+  const f=document.getElementById("f");
+  f.onload=()=>{const d=()=>f.contentWindow.document;
+    // click through to question 6, always picking a wrong option
+    const wrong=()=>{const b=[...d().getElementById("options").children];
+      (b.find(x=>Number(x.dataset.opt)!==0)||b[1]).click();};
+    const steps=[()=>d().getElementById("startBtn").click(),
+      wrong,()=>d().getElementById("nextBtn").click(),
+      wrong,()=>d().getElementById("nextBtn").click(),
+      wrong,()=>d().getElementById("nextBtn").click(),
+      ()=>d().getElementById("checkOrderBtn").click(),()=>d().getElementById("nextBtn").click(),
+      wrong,()=>d().getElementById("nextBtn").click(),
+      wrong];
+    let i=0;(function s(){if(i>=steps.length)return;try{steps[i++]()}catch(e){}setTimeout(s,320)})();};
+</script></body></html>

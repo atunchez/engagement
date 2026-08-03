@@ -159,9 +159,17 @@ const QUESTIONS = [
   },
   {
     type: "choice",
-    question: "What is Alex’s most annoying habit, according to Amanda?", // TODO
-    options: ["TODO", "TODO", "TODO", "TODO"],
+    // Alex's guess at Amanda's answer. Check with her — if she says something
+    // else, use hers, it'll be funnier.
+    question: "According to Amanda, what's Alex's most annoying habit?",
+    options: [
+      "He's forgetful",
+      "He leaves every cabinet door open",
+      "He falls asleep during any movie",
+      "He explains things she didn't ask about",
+    ],
     correct: 0,
+    note: "Forgetful. He'd tell you himself, if he remembered.",
   },
   {
     type: "order",
