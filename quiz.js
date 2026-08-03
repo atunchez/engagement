@@ -142,12 +142,15 @@ function render() {
 }
 
 function renderChoices(q) {
-  q.options.forEach((text, i) => {
+  // Shuffled every time, so the correct answer's position in quiz-data.js
+  // can't be used as a tell. Each button remembers which option it really is.
+  shuffled(q.options.length).forEach((optIdx) => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "option";
-    btn.textContent = text;
-    btn.addEventListener("click", () => answerChoice(q, i));
+    btn.textContent = q.options[optIdx];
+    btn.dataset.opt = optIdx;
+    btn.addEventListener("click", () => answerChoice(q, optIdx));
     el.options.appendChild(btn);
   });
 }
@@ -158,16 +161,19 @@ function answerChoice(q, chosen) {
 
   detail.push({ q: index, right: right, chosen: chosen });
 
-  Array.from(el.options.children).forEach((btn, i) => {
+  // Buttons are in shuffled order, so go by which option each one holds
+  // rather than its position on screen.
+  Array.from(el.options.children).forEach((btn) => {
+    const optIdx = Number(btn.dataset.opt);
     btn.disabled = true;
+
     if (!answersReleased) {
       // Show only what they picked — no hint as to whether it's right.
-      if (i === chosen) btn.classList.add("is-locked");
-      else btn.classList.add("is-dimmed");
+      btn.classList.add(optIdx === chosen ? "is-locked" : "is-dimmed");
       return;
     }
-    if (i === q.correct) btn.classList.add("is-correct");
-    else if (i === chosen) btn.classList.add("is-wrong");
+    if (optIdx === q.correct) btn.classList.add("is-correct");
+    else if (optIdx === chosen) btn.classList.add("is-wrong");
     else btn.classList.add("is-dimmed");
   });
 

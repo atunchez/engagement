@@ -115,15 +115,16 @@ const QUESTIONS = [
   },
   {
     type: "choice",
-    question: "Which one of us is genuinely the better cook?", // TODO
+    // "Active" on purpose — there are retired Giants we like more.
+    question: "Who's our favorite active Giant?",
     options: [
-      "Alex",
-      "Amanda",
-      "Neither — we order in",
-      "Depends entirely on the dish",
+      "Jung Hoo Lee",
+      "Logan Webb",
+      "Willy Adames",
+      "Luis Arraez",
     ],
-    correct: 1, // TODO
-    note: "TODO",
+    correct: 0,
+    note: "Jung Hoo Lee, and it isn't close.",
   },
   {
     type: "choice",
