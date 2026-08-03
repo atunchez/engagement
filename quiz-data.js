@@ -172,14 +172,17 @@ const QUESTIONS = [
     note: "Forgetful. He'd tell you himself, if he remembered.",
   },
   {
-    type: "order",
-    question: "Order these places we’ve traveled — first trip to most recent.",
-    items: [
-      "TODO — place 1",
-      "TODO — place 2",
-      "TODO — place 3",
-      "TODO — place 4",
+    type: "choice",
+    // All four are shows Amanda introduced, so the question is which one stuck
+    // rather than which one she picked.
+    question: "Amanda got Alex into reality TV. Which one did he end up loving most?",
+    options: [
+      "Vanderpump Rules",
+      "Love Island",
+      "Selling Sunset",
+      "Love Is Blind",
     ],
+    correct: 0,
   },
   {
     type: "choice",
