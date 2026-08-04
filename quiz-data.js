@@ -194,6 +194,9 @@ const QUESTIONS = [
       "The Cheesecake Factory",
     ],
     correct: 0,
+    note:
+      "Seasonal drinks, sports on every screen, genuinely affordable, and the " +
+      "Triple Dipper. Need we say more?",
   },
   {
     type: "choice",
