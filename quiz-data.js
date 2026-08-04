@@ -179,17 +179,21 @@ const QUESTIONS = [
     options: [
       "Vanderpump Rules",
       "Love Island",
-      "Selling Sunset",
+      "Jersey Shore",
       "Love Is Blind",
     ],
     correct: 0,
   },
   {
     type: "choice",
-    question: "What song is unavoidably “our song”?", // TODO
-    options: ["TODO", "TODO", "TODO", "TODO"],
+    question: "Where do we go for a low-effort chain restaurant night?",
+    options: [
+      "Chili's",
+      "Applebee's",
+      "Olive Garden",
+      "The Cheesecake Factory",
+    ],
     correct: 0,
-    note: "TODO",
   },
   {
     type: "choice",
