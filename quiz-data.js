@@ -200,10 +200,19 @@ const QUESTIONS = [
   },
   {
     type: "choice",
-    question: "How long have we been together, as of the party?", // TODO
-    options: ["TODO years", "TODO years", "TODO years", "TODO years"],
+    // Month, day and year all vary, so knowing roughly when it was doesn't
+    // hand it over. Last question, so the note closes the whole quiz.
+    question: "What's our dating anniversary?",
+    options: [
+      "August 31, 2020",
+      "December 12, 2020",
+      "January 5, 2021",
+      "July 18, 2021",
+    ],
     correct: 0,
-    note: "TODO",
+    note:
+      "Look at that — we're celebrating the engagement almost exactly six " +
+      "years to the day. Thank you for spending it with us 💛",
   },
 ];
 
