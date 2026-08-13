@@ -15,10 +15,27 @@
 //    leak       corner light leak colour, or null for none.
 //    stamp      whether to burn the date into the corner.
 //
-//  The first entry is the default.
+//  Order here is the order guests swipe through. DEFAULT_FILM below picks
+//  which one a photo lands on first.
 // ===================================================================
 
 const FILMS = [
+  {
+    // A straight resize: no grade, no grain, no stamp. For anyone who just
+    // wants their photo.
+    id: "none",
+    name: "No filter",
+    mul: [1, 1, 1],
+    add: [0, 0, 0],
+    lift: [0, 0, 0],
+    fade: 1,
+    contrast: 1,
+    saturation: 1,
+    grain: 0,
+    vignette: null,
+    leak: null,
+    stamp: false,
+  },
   {
     id: "disposable",
     name: "Disposable",
@@ -161,6 +178,9 @@ const FILMS = [
   },
 ];
 
+// Which look a photo opens on.
+const DEFAULT_FILM = "disposable";
+
 // Shared across every look.
 const FILM_OUTPUT = {
   maxEdge: 1600,      // longest side of the finished photo, in pixels
@@ -171,5 +191,11 @@ const FILM_OUTPUT = {
 };
 
 function filmById(id) {
-  return FILMS.find((f) => f.id === id) || FILMS[0];
+  // Falls back to defaultFilm(), not to itself — a missing DEFAULT_FILM would
+  // otherwise recurse forever.
+  return FILMS.find((f) => f.id === id) || defaultFilm();
+}
+
+function defaultFilm() {
+  return FILMS.find((f) => f.id === DEFAULT_FILM) || FILMS[0];
 }

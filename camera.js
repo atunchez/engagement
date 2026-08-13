@@ -19,7 +19,12 @@ const els = {
   collage: document.getElementById("collage"),
   collageGrid: document.getElementById("collageGrid"),
   collageEmpty: document.getElementById("collageEmpty"),
-  films: document.getElementById("films"),
+  frame: document.getElementById("frame"),
+  filmName: document.getElementById("filmName"),
+  filmPrev: document.getElementById("filmPrev"),
+  filmNext: document.getElementById("filmNext"),
+  filmDots: document.getElementById("filmDots"),
+  filmHint: document.getElementById("filmHint"),
 };
 
 const ctx = els.canvas.getContext("2d", { willReadFrequently: true });
@@ -27,7 +32,7 @@ let developed = null;     // data URL, for the "save to my phone" link
 let developedBlob = null; // the same image as a blob, for uploading
 let originalFile = null;  // exactly what came off their phone, unmodified
 let sourceImage = null;   // decoded original, kept so looks can be swapped
-let film = FILMS[0];      // the look currently applied
+let film = defaultFilm(); // the look currently applied
 
 // ===== INPUT =====
 
@@ -240,20 +245,22 @@ function autoDate() {
 // ===== CHOOSING A LOOK =====
 
 const FILM_CHOICE_KEY = "engagement-film-v1";
+const FILM_HINT_KEY = "engagement-film-hint-v1";
 
 // Re-develops the photo already loaded, through a different preset. Cheap
-// enough to run on every tap — it's one pass over a 1600px canvas.
+// enough to run on every swipe — it's one pass over a 1600px canvas.
 async function applyFilm(look) {
   if (!sourceImage) return;
 
   film = look;
   develop(sourceImage, look);
+  // Repaint the name and dots straight away. Encoding the JPEG below takes
+  // long enough that waiting for it makes the label lag the photo.
+  paintFilmBar();
 
   developed = els.canvas.toDataURL("image/jpeg", FILM_OUTPUT.quality);
   developedBlob = await canvasBlob();
   els.downloadBtn.href = developed;
-
-  markActiveFilm();
   try {
     localStorage.setItem(FILM_CHOICE_KEY, look.id);
   } catch (err) {
@@ -261,36 +268,80 @@ async function applyFilm(look) {
   }
 }
 
-function markActiveFilm() {
-  Array.from(els.films.children).forEach((btn) => {
-    btn.classList.toggle("is-active", btn.dataset.film === film.id);
-    btn.setAttribute("aria-pressed", btn.dataset.film === film.id);
+// Move n places through the list, wrapping at both ends.
+function stepFilm(n) {
+  const i = FILMS.indexOf(film);
+  const next = (i + n + FILMS.length) % FILMS.length;
+  hideHint();
+  applyFilm(FILMS[next]);
+}
+
+function paintFilmBar() {
+  els.filmName.textContent = film.name;
+  Array.from(els.filmDots.children).forEach((dot, i) => {
+    dot.classList.toggle("is-active", FILMS[i] === film);
   });
 }
 
-function buildFilmStrip() {
-  FILMS.forEach((look) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "films__btn";
-    btn.dataset.film = look.id;
-    btn.textContent = look.name;
-    btn.addEventListener("click", () => applyFilm(look));
-    els.films.appendChild(btn);
+function buildFilmBar() {
+  FILMS.forEach(() => {
+    const dot = document.createElement("span");
+    dot.className = "filmdots__dot";
+    els.filmDots.appendChild(dot);
   });
 
-  // Whatever they picked last time, so a second photo keeps the same look.
+  els.filmPrev.addEventListener("click", () => stepFilm(-1));
+  els.filmNext.addEventListener("click", () => stepFilm(1));
+
+  // Swipe across the photo itself.
+  let startX = null;
+  let startY = null;
+
+  els.frame.addEventListener("touchstart", (e) => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+
+  els.frame.addEventListener("touchend", (e) => {
+    if (startX === null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    // Only horizontal swipes, so scrolling the page still works.
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      stepFilm(dx < 0 ? 1 : -1);
+    }
+    startX = startY = null;
+  }, { passive: true });
+
+  // Arrow keys, for anyone on a laptop.
+  document.addEventListener("keydown", (e) => {
+    if (els.result.hidden) return;
+    if (e.key === "ArrowLeft") stepFilm(-1);
+    if (e.key === "ArrowRight") stepFilm(1);
+  });
+
   try {
     const saved = localStorage.getItem(FILM_CHOICE_KEY);
     if (saved) film = filmById(saved);
+    // The hint has done its job once they've swiped even once.
+    if (localStorage.getItem(FILM_HINT_KEY)) els.filmHint.hidden = true;
   } catch (err) {
     /* stick with the default */
   }
 
-  markActiveFilm();
+  paintFilmBar();
 }
 
-buildFilmStrip();
+function hideHint() {
+  els.filmHint.hidden = true;
+  try {
+    localStorage.setItem(FILM_HINT_KEY, "1");
+  } catch (err) {
+    /* it'll just show again next time */
+  }
+}
+
+buildFilmBar();
 
 // ===== SENDING =====
 

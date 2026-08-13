@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=2" />
-  <link rel="stylesheet" href="fun.css?v=8" />
+  <link rel="stylesheet" href="fun.css?v=10" />
 </head>
 <body class="page">
 
@@ -38,12 +38,17 @@
 
     <!-- ===== DEVELOPED PHOTO ===== -->
     <div class="cam__result" id="result" hidden>
-      <div class="cam__frame">
+      <div class="cam__frame" id="frame">
         <canvas class="cam__canvas" id="canvas"></canvas>
+        <p class="filmbar__hint" id="filmHint">Swipe to change the look</p>
       </div>
 
-      <p class="films__label">Pick a look</p>
-      <div class="films" id="films"></div>
+      <div class="filmbar">
+        <button class="filmbar__arrow" id="filmPrev" type="button" aria-label="Previous look">&#8249;</button>
+        <span class="filmbar__name" id="filmName"></span>
+        <button class="filmbar__arrow" id="filmNext" type="button" aria-label="Next look">&#8250;</button>
+      </div>
+      <div class="filmdots" id="filmDots"></div>
 
       <div class="cam__actions">
         <button class="btn" id="sendBtn">Send it to us</button>
@@ -79,9 +84,9 @@
     <p>With love, Alex &amp; Amanda</p>
   </footer>
 
-  <script src="config.js?v=8"></script>
-  <script src="api.js?v=8"></script>
-  <script src="films.js?v=8"></script>
-  <script src="camera.js?v=8"></script>
+  <script src="config.js?v=10"></script>
+  <script src="api.js?v=10"></script>
+  <script src="films.js?v=10"></script>
+  <script src="camera.js?v=10"></script>
 </body>
 </html>
