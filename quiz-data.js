@@ -128,37 +128,6 @@ const QUESTIONS = [
   },
   {
     type: "choice",
-    question: "Where did the proposal happen?",
-    options: [
-      "Gantry Park, Queens NY",
-      // Not a throwaway: this was genuinely the runner-up.
-      "Brooklyn Bridge Park, Brooklyn NY",
-      "Golden Gate Park, San Francisco CA",
-      "The bar from our first date, Manhattan NY",
-    ],
-    correct: 0,
-    note:
-      "Alex talked her into visiting the park a month ahead, claiming he'd seen " +
-      "it in an Instagram reel. Amanda was briefly suspicious — Alex doesn't " +
-      "plan things — and then forgot all about it. Edelyn and Sarah took her to " +
-      "get her nails done a few days before the trip, so she was ready for the " +
-      "ring photo without knowing why. She said no at first, purely out of " +
-      "disbelief and horror at doing this in public. Once the photographer left " +
-      "and the clapping strangers wandered off, she cried and called everyone " +
-      "she loves. Brooklyn Bridge Park was the runner-up — one of our early " +
-      "dates.",
-    answerPhotos: [
-      {
-        src: "photos/pretend_proposal/pretend-proposal.jpg",
-        caption:
-          "Alex fake-proposing in Prospect Park on 13 May 2021, almost five " +
-          "years to the day before the real one. Who said Alex is a bad " +
-          "planner? 😉",
-      },
-    ],
-  },
-  {
-    type: "choice",
     // Alex's guess at Amanda's answer. Check with her — if she says something
     // else, use hers, it'll be funnier.
     question: "According to Amanda, what's Alex's most annoying habit?",
@@ -201,7 +170,8 @@ const QUESTIONS = [
   {
     type: "choice",
     // Month, day and year all vary, so knowing roughly when it was doesn't
-    // hand it over. Last question, so the note closes the whole quiz.
+    // hand it over. Sits before the proposal so "six years to the day" leads
+    // into it rather than trailing after it.
     question: "What's our dating anniversary?",
     options: [
       "August 31, 2020",
@@ -213,6 +183,37 @@ const QUESTIONS = [
     note:
       "Look at that — we're celebrating the engagement almost exactly six " +
       "years to the day. Thank you for spending it with us 💛",
+  },
+  {
+    type: "choice",
+    question: "Where did the proposal happen?",
+    options: [
+      "Gantry Park, Queens NY",
+      // Not a throwaway: this was genuinely the runner-up.
+      "Brooklyn Bridge Park, Brooklyn NY",
+      "Golden Gate Park, San Francisco CA",
+      "The bar from our first date, Manhattan NY",
+    ],
+    correct: 0,
+    note:
+      "Alex talked her into visiting the park a month ahead, claiming he'd seen " +
+      "it in an Instagram reel. Amanda was briefly suspicious — Alex doesn't " +
+      "plan things — and then forgot all about it. Edelyn and Sarah took her to " +
+      "get her nails done a few days before the trip, so she was ready for the " +
+      "ring photo without knowing why. She said no at first, purely out of " +
+      "disbelief and horror at doing this in public. Once the photographer left " +
+      "and the clapping strangers wandered off, she cried and called everyone " +
+      "she loves. Brooklyn Bridge Park was the runner-up — one of our early " +
+      "dates.",
+    answerPhotos: [
+      {
+        src: "photos/pretend_proposal/pretend-proposal.jpg",
+        caption:
+          "Alex fake-proposing in Prospect Park on 13 May 2021, almost five " +
+          "years to the day before the real one. Who said Alex is a bad " +
+          "planner? 😉",
+      },
+    ],
   },
 ];
 
