@@ -1,6 +1,6 @@
 // ===================================================================
 //  ADMIN CONTROLS
-//  Two switches, behind a Supabase Auth sign-in. No password lives in this
+//  Three switches, behind a Supabase Auth sign-in. No password lives in this
 //  file — the sign-in is real, and the database only accepts changes from the
 //  accounts listed in schema.sql.
 // ===================================================================
@@ -20,6 +20,9 @@ const a = {
   collageState: document.getElementById("collageState"),
   collageHint: document.getElementById("collageHint"),
   collageBtn: document.getElementById("collageBtn"),
+  gamesState: document.getElementById("gamesState"),
+  gamesHint: document.getElementById("gamesHint"),
+  gamesBtn: document.getElementById("gamesBtn"),
   panelStatus: document.getElementById("panelStatus"),
   signOutBtn: document.getElementById("signOutBtn"),
 };
@@ -36,6 +39,18 @@ const COPY = {
       state: "Sealed",
       hint: "Guests get their score but not the answers. This is the starting state.",
       action: "Release the answers",
+    },
+  },
+  games_live: {
+    on: {
+      state: "Live",
+      hint: "The homepage links to the quiz and the camera.",
+      action: "Hide the games",
+    },
+    off: {
+      state: "Hidden",
+      hint: "Nothing on the homepage points to them. Flip this on the day.",
+      action: "Put the games live",
     },
   },
   collage_visible: {
@@ -112,6 +127,7 @@ async function refreshSwitches() {
     const s = await getSwitches();
     paint("answers_released", s.answers_released, a.answersState, a.answersHint, a.answersBtn);
     paint("collage_visible", s.collage_visible, a.collageState, a.collageHint, a.collageBtn);
+    paint("games_live", s.games_live, a.gamesState, a.gamesHint, a.gamesBtn);
     setStatusLine(a.panelStatus, "");
   } catch (err) {
     setStatusLine(a.panelStatus, err.message, true);
@@ -146,6 +162,10 @@ async function flip(field, next, btn) {
         ? next
           ? "Answers released — guests see them within 20 seconds."
           : "Answers sealed again."
+        : field === "games_live"
+        ? next
+          ? "Games are live on the homepage."
+          : "Games hidden from the homepage again."
         : next
         ? "Wall is up."
         : "Wall is down."

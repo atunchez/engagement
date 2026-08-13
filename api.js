@@ -285,7 +285,7 @@ async function signOut() {
 // Both switches at once, so the admin page can show real current state.
 async function getSwitches() {
   const res = await fetch(
-    SUPABASE_URL + "/rest/v1/settings?select=answers_released,collage_visible&id=eq.1",
+    SUPABASE_URL + "/rest/v1/settings?select=answers_released,collage_visible,games_live&id=eq.1",
     { headers: restHeaders() }
   );
   await failIfBad(res, "Reading the switches");

@@ -120,6 +120,11 @@ create policy "anyone can read photo rows"
 alter table settings
   add column if not exists collage_visible boolean not null default false;
 
+-- Reveals the "At the Party" section on the homepage. Off until the day, so
+-- going live is a toggle rather than a deploy.
+alter table settings
+  add column if not exists games_live boolean not null default false;
+
 -- ===== ADMIN ACCESS (for admin.html) =============================
 --
 -- Lets you flip both switches from admin.html after signing in, instead of

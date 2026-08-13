@@ -67,9 +67,10 @@
   </section>
 
   <!-- ===== AT THE PARTY =====
-       Merged to main on the day of the party. Until then these two pages
-       live only on the party-games branch, so nobody can play early. -->
-  <section class="details" id="party">
+       Hidden until `games_live` is switched on in the controls page, so this
+       goes live on the day without a deploy. Stays hidden if the check fails,
+       which is the safe way round. -->
+  <section class="details" id="party" hidden>
     <h2 class="section-title">At the Party</h2>
     <div class="details__grid">
       <div class="details__card">
@@ -151,5 +152,7 @@
 
   <script src="gallery.js"></script>
   <script src="script.js"></script>
+  <script src="config.js?v=10"></script>
+  <script src="home.js?v=10"></script>
 </body>
 </html>
