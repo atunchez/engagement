@@ -1,30 +1,9 @@
 // ===================================================================
 //  DISPOSABLE CAMERA
-//  Takes whatever photo the guest picks and re-develops it in a canvas
-//  to look like a drugstore point-and-shoot print: warm cast, faded
-//  blacks, grain, vignette, a light leak, and a glowing date stamp.
-//
-//  Tweakables are all in the FILM block below.
+//  Re-develops whatever photo the guest picks, in a canvas, to look like
+//  it came off a film camera. Guests pick which look from a strip under
+//  the photo; the presets themselves live in films.js.
 // ===================================================================
-
-const FILM = {
-  maxEdge: 1600,       // longest side of the finished photo, in pixels
-  quality: 0.88,       // JPEG quality
-  warmth: 1.07,        // red multiplier — higher is warmer
-  coolLoss: 0.92,      // blue multiplier — lower is warmer
-  fade: 0.9,           // how much the blacks lift (lower = more faded)
-  contrast: 1.1,       // S-curve strength
-  grain: 26,           // grain intensity, 0 turns it off
-  vignette: "#a2887a", // edge colour, multiplied in. Darker = heavier
-  leak: "rgba(255, 138, 60, 0.3)", // corner light leak
-  stampColor: "rgba(255, 168, 60, 0.95)",
-
-  // Also keep the guest's untouched original, so a clean copy survives for
-  // prints or a slideshow later. Uploaded in the background after the film
-  // version, so nobody waits on a 10MB file over party wifi.
-  keepOriginal: true,
-  maxOriginalMB: 20,
-};
 
 const els = {
   drop: document.getElementById("drop"),
@@ -40,12 +19,15 @@ const els = {
   collage: document.getElementById("collage"),
   collageGrid: document.getElementById("collageGrid"),
   collageEmpty: document.getElementById("collageEmpty"),
+  films: document.getElementById("films"),
 };
 
 const ctx = els.canvas.getContext("2d", { willReadFrequently: true });
 let developed = null;     // data URL, for the "save to my phone" link
 let developedBlob = null; // the same image as a blob, for uploading
 let originalFile = null;  // exactly what came off their phone, unmodified
+let sourceImage = null;   // decoded original, kept so looks can be swapped
+let film = FILMS[0];      // the look currently applied
 
 // ===== INPUT =====
 
@@ -83,11 +65,9 @@ async function handleFile(file) {
   originalFile = file;
 
   try {
-    const image = await loadImage(file);
-    develop(image);
-    developed = els.canvas.toDataURL("image/jpeg", FILM.quality);
-    developedBlob = await canvasBlob();
-    els.downloadBtn.href = developed;
+    // Kept around so switching looks doesn't mean re-reading the file.
+    sourceImage = await loadImage(file);
+    await applyFilm(film);
     els.working.hidden = true;
     els.result.hidden = false;
     els.result.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -116,10 +96,11 @@ async function loadImage(file) {
 
 // ===== DEVELOPING =====
 
-function develop(image) {
+function develop(image, look) {
+  look = look || film;
   const sw = image.width;
   const sh = image.height;
-  const scale = Math.min(1, FILM.maxEdge / Math.max(sw, sh));
+  const scale = Math.min(1, FILM_OUTPUT.maxEdge / Math.max(sw, sh));
   const w = Math.round(sw * scale);
   const h = Math.round(sh * scale);
 
@@ -129,32 +110,43 @@ function develop(image) {
   ctx.globalCompositeOperation = "source-over";
   ctx.drawImage(image, 0, 0, w, h);
 
-  grade(w, h);
-  vignette(w, h);
-  lightLeak(w, h);
-  dateStamp(w, h);
+  grade(w, h, look);
+  if (look.vignette) vignette(w, h, look);
+  if (look.leak) lightLeak(w, h, look);
+  if (look.stamp) dateStamp(w, h);
 
   ctx.globalCompositeOperation = "source-over";
 }
 
-// Colour grade + grain, in one pass over the pixels.
-function grade(w, h) {
+// Colour grade, saturation and grain, in one pass over the pixels.
+function grade(w, h, look) {
   const frame = ctx.getImageData(0, 0, w, h);
   const d = frame.data;
 
-  const red = curve(FILM.warmth, 6, 20);
-  const green = curve(1.01, 2, 16);
-  const blue = curve(FILM.coolLoss, -4, 22);
+  const red = curve(look, 0);
+  const green = curve(look, 1);
+  const blue = curve(look, 2);
+
+  const sat = look.saturation === undefined ? 1 : look.saturation;
+  const grain = look.grain || 0;
 
   for (let i = 0; i < d.length; i += 4) {
     let r = red[d[i]];
     let g = green[d[i + 1]];
     let b = blue[d[i + 2]];
 
-    if (FILM.grain) {
+    if (sat !== 1) {
+      // Rec. 601 luma, so desaturating doesn't lighten or darken the frame.
+      const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+      r = lum + (r - lum) * sat;
+      g = lum + (g - lum) * sat;
+      b = lum + (b - lum) * sat;
+    }
+
+    if (grain) {
       // Grain reads strongest in the midtones, the way real film does.
       const mid = 1 - Math.abs((r + g + b) / 3 - 128) / 128;
-      const n = (Math.random() - 0.5) * FILM.grain * (0.45 + 0.55 * mid);
+      const n = (Math.random() - 0.5) * grain * (0.45 + 0.55 * mid);
       r += n;
       g += n;
       b += n;
@@ -169,19 +161,25 @@ function grade(w, h) {
 }
 
 // Precompute a 256-entry lookup table for one channel — much faster than
-// doing this arithmetic per pixel.
-function curve(mul, add, liftBase) {
+// doing this arithmetic per pixel. c is 0=red, 1=green, 2=blue.
+function curve(look, c) {
+  const mul = look.mul ? look.mul[c] : 1;
+  const add = look.add ? look.add[c] : 0;
+  const lift = look.lift ? look.lift[c] : 0;
+  const fade = look.fade === undefined ? 1 : look.fade;
+  const contrast = look.contrast === undefined ? 1 : look.contrast;
+
   const table = new Uint8ClampedArray(256);
   for (let v = 0; v < 256; v++) {
     let x = v * mul + add;
-    x = liftBase + x * FILM.fade;
-    x = ((x / 255 - 0.5) * FILM.contrast + 0.5) * 255;
+    x = lift + x * fade;
+    x = ((x / 255 - 0.5) * contrast + 0.5) * 255;
     table[v] = x;
   }
   return table;
 }
 
-function vignette(w, h) {
+function vignette(w, h, look) {
   const cx = w / 2;
   const cy = h / 2;
   const g = ctx.createRadialGradient(
@@ -190,20 +188,21 @@ function vignette(w, h) {
   );
   g.addColorStop(0, "#ffffff");
   g.addColorStop(0.62, "#f2ece7");
-  g.addColorStop(1, FILM.vignette);
+  g.addColorStop(1, look.vignette);
 
   ctx.globalCompositeOperation = "multiply";
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, w, h);
 }
 
-function lightLeak(w, h) {
+function lightLeak(w, h, look) {
   const g = ctx.createRadialGradient(
     w * 1.02, h * 0.12, 0,
     w * 1.02, h * 0.12, Math.max(w, h) * 0.55
   );
-  g.addColorStop(0, FILM.leak);
-  g.addColorStop(1, "rgba(255, 138, 60, 0)");
+  g.addColorStop(0, look.leak);
+  // Same hue, zero alpha, so the leak fades out instead of greying off.
+  g.addColorStop(1, look.leak.replace(/[\d.]+\)$/, "0)"));
 
   ctx.globalCompositeOperation = "screen";
   ctx.fillStyle = g;
@@ -222,7 +221,7 @@ function dateStamp(w, h) {
   ctx.textBaseline = "alphabetic";
   ctx.shadowColor = "rgba(255, 110, 20, 0.9)";
   ctx.shadowBlur = size * 0.55;
-  ctx.fillStyle = FILM.stampColor;
+  ctx.fillStyle = FILM_OUTPUT.stampColor;
 
   const x = w - size * 0.75;
   const y = h - size * 0.7;
@@ -238,11 +237,66 @@ function autoDate() {
   return `${now.getMonth() + 1} ${now.getDate()} '${yy}`;
 }
 
+// ===== CHOOSING A LOOK =====
+
+const FILM_CHOICE_KEY = "engagement-film-v1";
+
+// Re-develops the photo already loaded, through a different preset. Cheap
+// enough to run on every tap — it's one pass over a 1600px canvas.
+async function applyFilm(look) {
+  if (!sourceImage) return;
+
+  film = look;
+  develop(sourceImage, look);
+
+  developed = els.canvas.toDataURL("image/jpeg", FILM_OUTPUT.quality);
+  developedBlob = await canvasBlob();
+  els.downloadBtn.href = developed;
+
+  markActiveFilm();
+  try {
+    localStorage.setItem(FILM_CHOICE_KEY, look.id);
+  } catch (err) {
+    /* private browsing — they just re-pick next time */
+  }
+}
+
+function markActiveFilm() {
+  Array.from(els.films.children).forEach((btn) => {
+    btn.classList.toggle("is-active", btn.dataset.film === film.id);
+    btn.setAttribute("aria-pressed", btn.dataset.film === film.id);
+  });
+}
+
+function buildFilmStrip() {
+  FILMS.forEach((look) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "films__btn";
+    btn.dataset.film = look.id;
+    btn.textContent = look.name;
+    btn.addEventListener("click", () => applyFilm(look));
+    els.films.appendChild(btn);
+  });
+
+  // Whatever they picked last time, so a second photo keeps the same look.
+  try {
+    const saved = localStorage.getItem(FILM_CHOICE_KEY);
+    if (saved) film = filmById(saved);
+  } catch (err) {
+    /* stick with the default */
+  }
+
+  markActiveFilm();
+}
+
+buildFilmStrip();
+
 // ===== SENDING =====
 
 function canvasBlob() {
   return new Promise((resolve) =>
-    els.canvas.toBlob(resolve, "image/jpeg", FILM.quality)
+    els.canvas.toBlob(resolve, "image/jpeg", FILM_OUTPUT.quality)
   );
 }
 
@@ -285,13 +339,13 @@ els.sendBtn.addEventListener("click", async () => {
 // Best effort. If it fails the guest never hears about it — they've already
 // been thanked, and the film version is safely stored.
 function sendOriginal(id, who) {
-  if (!FILM.keepOriginal || !originalFile) return;
+  if (!FILM_OUTPUT.keepOriginal || !originalFile) return;
 
-  if (originalFile.size > FILM.maxOriginalMB * 1024 * 1024) {
+  if (originalFile.size > FILM_OUTPUT.maxOriginalMB * 1024 * 1024) {
     console.warn(
       "Skipping original: " +
         Math.round(originalFile.size / 1048576) +
-        "MB exceeds the " + FILM.maxOriginalMB + "MB cap."
+        "MB exceeds the " + FILM_OUTPUT.maxOriginalMB + "MB cap."
     );
     return;
   }
