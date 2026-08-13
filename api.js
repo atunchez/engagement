@@ -282,10 +282,15 @@ async function signOut() {
   }
 }
 
-// Both switches at once, so the admin page can show real current state.
+// Every switch at once, so the admin page can show real current state.
+//
+// Deliberately `select=*` rather than naming columns: asking for a column that
+// doesn't exist yet is a 400, which would take the whole controls page down
+// over one unrun migration. This way a missing column just reads as undefined
+// and its own switch shows off, while the others keep working.
 async function getSwitches() {
   const res = await fetch(
-    SUPABASE_URL + "/rest/v1/settings?select=answers_released,collage_visible,games_live&id=eq.1",
+    SUPABASE_URL + "/rest/v1/settings?select=*&id=eq.1",
     { headers: restHeaders() }
   );
   await failIfBad(res, "Reading the switches");
