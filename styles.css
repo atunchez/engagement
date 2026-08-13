@@ -332,3 +332,10 @@ body {
   font-size: 0.7rem;
   letter-spacing: 0.14em;
 }
+/* `.details__card a` sets brown text and an underline for the ordinary links
+   in those cards, and out-specifies `.btn`. These are buttons, not links. */
+.party__card a.btn,
+.party__card a.btn:hover {
+  color: var(--white);
+  border-bottom: none;
+}
