@@ -16,3 +16,6 @@ photos/timeline/apt_move_in/
 # Local test harnesses.
 _t-*.html
 _e2e*.html
+
+# QR codes for the party — regenerate any time, no need to publish them.
+qr-*.png
