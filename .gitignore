@@ -1,1 +1,18 @@
 photos/originals/
+
+# Source photo contains a DMV document with a home address on it.
+# The redacted crop is what gets published, if anything.
+photos/timeline/drivers_license/
+
+# Full-resolution sources for the quiz photos. The resized, web-sized versions
+# beside them are what's published; these stay local so ~10MB of originals
+# aren't served off a public URL for no reason.
+photos/first_date/21.jpg
+photos/first_date/23.jpg
+photos/pretend_proposal/IMG_2818.HEIC
+photos/timeline/IMG_5250.PNG
+photos/timeline/apt_move_in/
+
+# Local test harnesses.
+_t-*.html
+_e2e*.html

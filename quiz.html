@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How Well Do You Know Us? — Alex &amp; Amanda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=4" />
+  <link rel="stylesheet" href="fun.css?v=11" />
+</head>
+<body class="page">
+
+  <nav class="tabs">
+    <a href="quiz.html" aria-current="page"><span class="tabs__full">The Quiz</span><span class="tabs__short">Quiz</span></a>
+    <a href="camera.html"><span class="tabs__full">Disposable Cam</span><span class="tabs__short">Camera</span></a>
+    <a href="board.html"><span class="tabs__full">Leaderboard</span><span class="tabs__short">Board</span></a>
+    <a class="tabs__home" href="index.html"><span class="tabs__full">Home</span><span class="tabs__short">Home</span></a>
+  </nav>
+
+  <main class="quiz">
+
+    <!-- ===== START ===== -->
+    <section class="quiz__screen is-active" id="screen-start">
+      <h1 class="section-title" id="quizTitle">How well do you know us?</h1>
+      <p class="quiz__intro" id="quizIntro"></p>
+      <button class="btn" id="startBtn">Start</button>
+      <button class="quiz__replay" id="resumeBtn" hidden>See how you did</button>
+    </section>
+
+    <!-- ===== PLAY ===== -->
+    <section class="quiz__screen" id="screen-play">
+      <div class="quiz__progress">
+        <div class="quiz__progress-bar"><span id="progressFill"></span></div>
+        <p class="quiz__count" id="progressText"></p>
+      </div>
+
+      <h2 class="quiz__question" id="questionText"></h2>
+
+      <!-- photos that come with the question, visible sealed or not -->
+      <div class="quiz__askPhotos" id="askPhotos" hidden></div>
+
+      <!-- multiple choice -->
+      <div class="quiz__options" id="options"></div>
+
+      <!-- timeline sort -->
+      <div class="quiz__order" id="orderList" hidden></div>
+      <button class="btn quiz__check" id="checkOrderBtn" hidden>Lock it in</button>
+
+      <div class="quiz__feedback" id="feedback" hidden>
+        <p class="quiz__verdict" id="verdict"></p>
+        <p class="quiz__note" id="note"></p>
+        <div class="quiz__photos" id="feedbackPhotos" hidden></div>
+        <button class="btn" id="nextBtn">Next</button>
+      </div>
+    </section>
+
+    <!-- ===== RESULT ===== -->
+    <section class="quiz__screen" id="screen-result">
+      <h2 class="section-title">How you did</h2>
+      <p class="quiz__score" id="scoreLine"></p>
+      <p class="quiz__tier" id="tierLabel"></p>
+      <p class="quiz__blurb" id="tierBlurb"></p>
+
+      <form class="quiz__submit form" id="scoreForm">
+        <label class="form__field">
+          <span>Name for the leaderboard</span>
+          <input type="text" name="name" maxlength="40" placeholder="e.g. Jane D." required />
+        </label>
+        <button type="submit" class="btn form__submit">Post my score</button>
+        <p class="form__status" id="scoreStatus" role="status" aria-live="polite"></p>
+      </form>
+
+      <p class="quiz__pending" id="pending" hidden>
+        The answers are still sealed — Alex and Amanda will drop them later
+        tonight. Leave this page open, or come back to it: this phone remembers
+        what you picked, so you'll see exactly what you got wrong.
+      </p>
+
+      <div class="quiz__after">
+        <button class="btn" id="revealBtn" hidden>See the answers</button>
+        <a class="btn btn--ghost" href="camera.html">Now take a photo &#8250;</a>
+        <button class="quiz__replay" id="replayBtn">Play again</button>
+      </div>
+
+      <div class="review" id="review" hidden></div>
+
+      <div class="leaderboard" id="leaderboard" hidden>
+        <h3>Leaderboard</h3>
+        <ol id="leaderboardList"></ol>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>With love, Alex &amp; Amanda</p>
+  </footer>
+
+  <script src="config.js?v=11"></script>
+  <script src="api.js?v=11"></script>
+  <script src="quiz-data.js?v=11"></script>
+  <script src="quiz.js?v=11"></script>
+</body>
+</html>

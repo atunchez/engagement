@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=2" />
+  <link rel="stylesheet" href="styles.css?v=4" />
 </head>
 <body>
 
@@ -62,6 +62,38 @@
       <div class="details__card">
         <h3>Getting Here</h3>
         <p>Parking is limited — carpooling or rideshare is encouraged. $10 Waymo ride codes are available (limited supply) for guests coming across the Bay; just request one on your RSVP.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== AT THE PARTY =====
+       Hidden until `games_live` is switched on in the controls page, so this
+       goes live on the day without a deploy. Stays hidden if the check fails,
+       which is the safe way round. -->
+  <section class="details" id="party" hidden>
+    <h2 class="section-title">At the Party</h2>
+    <p class="party__intro">
+      Three things to do while you're here. You can hop between them from the
+      bar at the top of any of these pages.
+    </p>
+    <div class="details__grid">
+      <div class="details__card party__card">
+        <h3>The Quiz</h3>
+        <p>How well do you actually know us? Ten questions, and a score at the end.</p>
+        <a class="btn btn--small" href="quiz.html">Play the quiz</a>
+      </div>
+      <div class="details__card party__card">
+        <h3>Disposable Camera</h3>
+        <p>
+          Take a photo and we'll develop it like it came off a drugstore
+          point-and-shoot. It joins the wall for everyone to see.
+        </p>
+        <a class="btn btn--small" href="camera.html">Open the camera</a>
+      </div>
+      <div class="details__card party__card">
+        <h3>Leaderboard</h3>
+        <p>Where you landed, and which questions everyone's getting wrong.</p>
+        <a class="btn btn--small" href="board.html">See the standings</a>
       </div>
     </div>
   </section>
@@ -126,5 +158,7 @@
 
   <script src="gallery.js"></script>
   <script src="script.js"></script>
+  <script src="config.js?v=11"></script>
+  <script src="home.js?v=11"></script>
 </body>
 </html>

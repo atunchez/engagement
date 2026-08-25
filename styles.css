@@ -307,3 +307,35 @@ body {
 @media (max-width: 520px) {
   .form__row { flex-direction: column; }
 }
+
+/* ===== AT THE PARTY =====
+   Added for the party pages' entry points on the homepage. Purely additive —
+   these classes aren't used by anything that existed before. */
+.party__intro {
+  text-align: center;
+  color: var(--muted);
+  max-width: 34rem;
+  margin: -1rem auto 2rem;
+  font-size: 0.98rem;
+}
+.party__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+/* Pushes the button to the bottom so all three line up despite different
+   amounts of text above them. */
+.party__card p { flex: 1; }
+.btn--small {
+  align-self: center;
+  padding: 0.65rem 1.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+}
+/* `.details__card a` sets brown text and an underline for the ordinary links
+   in those cards, and out-specifies `.btn`. These are buttons, not links. */
+.party__card a.btn,
+.party__card a.btn:hover {
+  color: var(--white);
+  border-bottom: none;
+}

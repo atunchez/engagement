@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disposable Camera — Alex &amp; Amanda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=4" />
+  <link rel="stylesheet" href="fun.css?v=11" />
+</head>
+<body class="page">
+
+  <nav class="tabs">
+    <a href="quiz.html"><span class="tabs__full">The Quiz</span><span class="tabs__short">Quiz</span></a>
+    <a href="camera.html" aria-current="page"><span class="tabs__full">Disposable Cam</span><span class="tabs__short">Camera</span></a>
+    <a href="board.html"><span class="tabs__full">Leaderboard</span><span class="tabs__short">Board</span></a>
+    <a class="tabs__home" href="index.html"><span class="tabs__full">Home</span><span class="tabs__short">Home</span></a>
+  </nav>
+
+  <main class="cam">
+    <h1 class="section-title">Disposable Camera</h1>
+    <p class="cam__intro">
+      Take a photo — or pick one you already took — and we'll develop it like it
+      came off a drugstore point-and-shoot. Send it to us and it goes in the pile.
+    </p>
+
+    <!-- ===== PICK A PHOTO ===== -->
+    <div class="cam__drop" id="drop">
+      <div class="cam__drop-icon">&#128247;</div>
+      <p class="cam__drop-text">Tap to take a photo</p>
+      <p class="cam__drop-hint">or choose one from your camera roll</p>
+      <input type="file" id="fileInput" accept="image/*" capture="environment" />
+    </div>
+
+    <p class="cam__working" id="working" hidden>Developing…</p>
+
+    <!-- ===== DEVELOPED PHOTO ===== -->
+    <div class="cam__result" id="result" hidden>
+      <div class="cam__frame" id="frame">
+        <canvas class="cam__canvas" id="canvas"></canvas>
+        <p class="filmbar__hint" id="filmHint">Swipe to change the look</p>
+      </div>
+
+      <div class="filmbar">
+        <button class="filmbar__arrow" id="filmPrev" type="button" aria-label="Previous look">&#8249;</button>
+        <span class="filmbar__name" id="filmName"></span>
+        <button class="filmbar__arrow" id="filmNext" type="button" aria-label="Next look">&#8250;</button>
+      </div>
+      <div class="filmdots" id="filmDots"></div>
+
+      <div class="cam__actions">
+        <button class="btn" id="sendBtn">Send it to us</button>
+        <a class="btn btn--ghost" id="downloadBtn" download="engagement-party.jpg">Save to my phone</a>
+        <button class="btn btn--ghost" id="againBtn">Another one</button>
+      </div>
+
+      <label class="form__field cam__field">
+        <span>Your name (optional)</span>
+        <input type="text" id="camName" maxlength="40" placeholder="so we know who took it" />
+      </label>
+
+      <p class="cam__status" id="camStatus" role="status" aria-live="polite"></p>
+    </div>
+
+    <p class="cam__note">
+      The film version you send joins the wall below for everyone at the party
+      to see. Your unedited original goes somewhere private that only the two
+      of us can open, so the good ones survive at full quality.
+    </p>
+
+    <!-- ===== THE WALL ===== -->
+    <section class="wall" id="collage" hidden>
+      <h2 class="section-title">The Wall</h2>
+      <p class="wall__empty" id="collageEmpty" hidden>
+        Nothing here yet — be the first.
+      </p>
+      <div class="wall__grid" id="collageGrid"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>With love, Alex &amp; Amanda</p>
+  </footer>
+
+  <script src="config.js?v=11"></script>
+  <script src="api.js?v=11"></script>
+  <script src="films.js?v=11"></script>
+  <script src="camera.js?v=11"></script>
+</body>
+</html>
