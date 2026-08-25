@@ -340,15 +340,3 @@ body {
   border-bottom: none;
 }
 
-/* A closing line under the details grid — full width, so it doesn't leave an
-   orphan card on a row of its own. */
-.details__note {
-  max-width: 34rem;
-  margin: 2.5rem auto 0;
-  text-align: center;
-  font-family: "Cormorant Garamond", serif;
-  font-style: italic;
-  font-size: 1.25rem;
-  line-height: 1.6;
-  color: var(--accent-deep);
-}
