@@ -550,7 +550,7 @@ el.scoreForm.addEventListener("submit", async (e) => {
     myName = name;
     save(); // remember the name too, so board.html can pick them out
     nameField.disabled = true;
-    el.scoreStatus.textContent = "Posted. Go find us and argue about question 7.";
+    el.scoreStatus.textContent = "Posted — thank you for playing 💛";
     loadLeaderboard(name);
   } catch (err) {
     el.scoreStatus.textContent = "Couldn't post your score — but you still played.";
