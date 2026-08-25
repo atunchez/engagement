@@ -181,6 +181,19 @@ const FILMS = [
 // Which look a photo opens on.
 const DEFAULT_FILM = "disposable";
 
+// The optional party frame — a white border with your names printed in the
+// bottom margin, like a polaroid. Toggled on the camera page and works with
+// any look. Edit the wording here.
+const FRAME = {
+  name: "Alex & Amanda",
+  date: "August 29, 2026",
+  paper: "#fffdfb",   // border colour
+  ink: "#8c6a4f",     // the names
+  inkSoft: "#a99584", // the date
+  edge: 0.045,        // side and top border, as a fraction of the photo
+  foot: 0.17,         // bottom margin, where the text sits
+};
+
 // Shared across every look.
 const FILM_OUTPUT = {
   maxEdge: 1600,      // longest side of the finished photo, in pixels

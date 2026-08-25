@@ -25,6 +25,7 @@ const els = {
   filmNext: document.getElementById("filmNext"),
   filmDots: document.getElementById("filmDots"),
   filmHint: document.getElementById("filmHint"),
+  frameBtn: document.getElementById("frameBtn"),
 };
 
 const ctx = els.canvas.getContext("2d", { willReadFrequently: true });
@@ -33,6 +34,7 @@ let developedBlob = null; // the same image as a blob, for uploading
 let originalFile = null;  // exactly what came off their phone, unmodified
 let sourceImage = null;   // decoded original, kept so looks can be swapped
 let film = defaultFilm(); // the look currently applied
+let framed = false;       // whether the party frame is on
 
 // ===== INPUT =====
 
@@ -121,6 +123,46 @@ function develop(image, look) {
   if (look.stamp) dateStamp(w, h);
 
   ctx.globalCompositeOperation = "source-over";
+
+  if (framed) drawFrame(w, h);
+}
+
+// Wraps the finished photo in a white border with the names printed below it.
+// Runs last, so the grade, grain and vignette land on the photo and not on the
+// paper around it.
+function drawFrame(w, h) {
+  const edge = Math.round(Math.min(w, h) * FRAME.edge);
+  const foot = Math.round(Math.min(w, h) * FRAME.foot);
+
+  // Copy the developed photo aside, then grow the canvas around it.
+  const photo = document.createElement("canvas");
+  photo.width = w;
+  photo.height = h;
+  photo.getContext("2d").drawImage(els.canvas, 0, 0);
+
+  els.canvas.width = w + edge * 2;
+  els.canvas.height = h + edge + foot;
+
+  ctx.fillStyle = FRAME.paper;
+  ctx.fillRect(0, 0, els.canvas.width, els.canvas.height);
+  ctx.drawImage(photo, edge, edge);
+
+  const centre = els.canvas.width / 2;
+  const nameSize = Math.round(foot * 0.34);
+  const dateSize = Math.round(foot * 0.16);
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "alphabetic";
+
+  ctx.fillStyle = FRAME.ink;
+  ctx.font = `500 ${nameSize}px "Cormorant Garamond", Georgia, serif`;
+  ctx.fillText(FRAME.name, centre, h + edge + foot * 0.52);
+
+  ctx.fillStyle = FRAME.inkSoft;
+  ctx.font = `400 ${dateSize}px "Montserrat", system-ui, sans-serif`;
+  ctx.letterSpacing = Math.round(dateSize * 0.22) + "px";
+  ctx.fillText(FRAME.date.toUpperCase(), centre, h + edge + foot * 0.8);
+  ctx.letterSpacing = "0px";
 }
 
 // Colour grade, saturation and grain, in one pass over the pixels.
@@ -246,11 +288,30 @@ function autoDate() {
 
 const FILM_CHOICE_KEY = "engagement-film-v1";
 const FILM_HINT_KEY = "engagement-film-hint-v1";
+const FRAME_CHOICE_KEY = "engagement-frame-v1";
+
+// Canvas draws text with whatever font is loaded at that moment, so on a slow
+// connection the frame could render in a fallback serif. Kick the two fonts
+// off now and wait on this before developing.
+const fontsReady = document.fonts
+  ? Promise.all([
+      document.fonts.load('500 40px "Cormorant Garamond"'),
+      document.fonts.load('400 20px "Montserrat"'),
+    ]).catch(() => {})
+  : Promise.resolve();
+
+function paintFrameBtn() {
+  els.frameBtn.textContent = framed ? "Remove the frame" : "Add the party frame";
+  els.frameBtn.classList.toggle("is-on", framed);
+  els.frameBtn.setAttribute("aria-pressed", String(framed));
+}
 
 // Re-develops the photo already loaded, through a different preset. Cheap
 // enough to run on every swipe — it's one pass over a 1600px canvas.
 async function applyFilm(look) {
   if (!sourceImage) return;
+
+  if (framed) await fontsReady;
 
   film = look;
   develop(sourceImage, look);
@@ -290,6 +351,17 @@ function buildFilmBar() {
     els.filmDots.appendChild(dot);
   });
 
+  els.frameBtn.addEventListener("click", () => {
+    framed = !framed;
+    paintFrameBtn();
+    try {
+      localStorage.setItem(FRAME_CHOICE_KEY, framed ? "1" : "");
+    } catch (err) {
+      /* they'll just re-pick next time */
+    }
+    applyFilm(film);
+  });
+
   els.filmPrev.addEventListener("click", () => stepFilm(-1));
   els.filmNext.addEventListener("click", () => stepFilm(1));
 
@@ -325,11 +397,13 @@ function buildFilmBar() {
     if (saved) film = filmById(saved);
     // The hint has done its job once they've swiped even once.
     if (localStorage.getItem(FILM_HINT_KEY)) els.filmHint.hidden = true;
+    framed = !!localStorage.getItem(FRAME_CHOICE_KEY);
   } catch (err) {
     /* stick with the default */
   }
 
   paintFilmBar();
+  paintFrameBtn();
 }
 
 function hideHint() {
