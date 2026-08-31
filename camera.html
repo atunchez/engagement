@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=6" />
-  <link rel="stylesheet" href="fun.css?v=12" />
+  <link rel="stylesheet" href="fun.css?v=13" />
 </head>
 <body class="page">
 
@@ -29,9 +29,12 @@
     <!-- ===== PICK A PHOTO ===== -->
     <div class="cam__drop" id="drop">
       <div class="cam__drop-icon">&#128247;</div>
-      <p class="cam__drop-text">Tap to take a photo</p>
-      <p class="cam__drop-hint">or choose one from your camera roll</p>
-      <input type="file" id="fileInput" accept="image/*" capture="environment" />
+      <p class="cam__drop-text">Tap to add a photo</p>
+      <p class="cam__drop-hint">Take one now, or pick from your camera roll</p>
+      <!-- No `capture` attribute on purpose: it forces the camera and iOS
+           drops the photo-library option entirely. Without it you get the
+           normal sheet with both. -->
+      <input type="file" id="fileInput" accept="image/*" />
     </div>
 
     <p class="cam__working" id="working" hidden>Developing…</p>
@@ -88,9 +91,9 @@
     <p>With love, Alex &amp; Amanda</p>
   </footer>
 
-  <script src="config.js?v=12"></script>
-  <script src="api.js?v=12"></script>
-  <script src="films.js?v=12"></script>
-  <script src="camera.js?v=12"></script>
+  <script src="config.js?v=13"></script>
+  <script src="api.js?v=13"></script>
+  <script src="films.js?v=13"></script>
+  <script src="camera.js?v=13"></script>
 </body>
 </html>
